@@ -31,6 +31,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d
                     datefmt='%Y%m%d-%H:%M:%S',
                     level=logging.INFO)
 
+print(f'starting up version {version.CLOUD_LANGUAGE_TOOLS_VERSION}')
+
 # sentry crash reporting
 # ======================
 
