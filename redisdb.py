@@ -111,13 +111,18 @@ class RedisDb():
         logging.info(f'added {redis_key}: {hash_value}')        
         
     # prod workflow
+    def normalize_trial_email(self, email):
+        return email.lower()
+
     def trial_user_key_exists(self, email):
+        email = self.normalize_trial_email(email)
         redis_trial_user_key = self.build_key(KEY_TYPE_TRIAL_USER, email)
         if self.r.exists(redis_trial_user_key):
             return True
         return False
         
     def get_trial_user_key(self, email):
+        email = self.normalize_trial_email(email)
         redis_trial_user_key = self.build_key(KEY_TYPE_TRIAL_USER, email)
         if self.r.exists(redis_trial_user_key):
             # user already requested a key
