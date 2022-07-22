@@ -4,6 +4,7 @@ services:
     environment:
       - DEFAULT_EMAIL
       - GPG_PASSPHRASE
+      - CLOUDLANGUAGETOOLS_CORE_KEY
       - ENV
       - GUNICORN_WORKERS
       - VIRTUAL_HOST
@@ -17,6 +18,7 @@ services:
     image: lucwastiaux/cloud-language-tools:${CLT_TAG}
     environment:
       - GPG_PASSPHRASE
+      - CLOUDLANGUAGETOOLS_CORE_KEY
       - ENV
       - RUN_SCHEDULED_TASKS=1
     network_mode: bridge
