@@ -54,8 +54,8 @@ def report_getcheddar_usage():
 def update_language_data():
     try:    
         logging.info('udpating language data')
-        manager = cloudlanguagetools.servicemanager.ServiceManager(secrets.config)
-        manager.configure()
+        manager = cloudlanguagetools.servicemanager.ServiceManager()
+        manager.configure_default()
         language_data = manager.get_language_data_json()
         redis_connection = redisdb.RedisDb()
         redis_connection.store_language_data(language_data)
