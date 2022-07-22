@@ -26,7 +26,7 @@ RUN pip3 install clt_spacy==0.1
 RUN pip3 install clt_argostranslate==0.1
 RUN pip3 install clt_requirements==0.1
 # install cloudlanguagetools-core, change version as required
-RUN pip3 install cloudlanguagetools==1.6
+RUN pip3 install cloudlanguagetools==1.7
 
 # this adds any required modules not covered above
 COPY requirements.txt ./
