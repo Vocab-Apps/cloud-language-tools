@@ -12,7 +12,7 @@ import datetime
 import time
 import sys
 
-import secrets
+import clt_secrets as secrets
 import redisdb
 import getcheddar_utils
 import user_utils

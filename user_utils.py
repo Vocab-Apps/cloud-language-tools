@@ -5,7 +5,7 @@ import argparse
 import json
 import pprint
 
-import secrets
+import clt_secrets as secrets
 import quotas
 import redisdb
 import airtable_utils

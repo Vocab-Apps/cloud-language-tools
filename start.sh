@@ -1,6 +1,6 @@
 #!/bin/sh
 CWD=`pwd`
-gpg --batch --yes --passphrase ${GPG_PASSPHRASE} --output ${CWD}/secrets.py  --decrypt secrets.py.gpg
+gpg --batch --yes --passphrase ${GPG_PASSPHRASE} --output ${CWD}/clt_secrets.py  --decrypt secrets.py.gpg
 gpg --batch --yes --passphrase ${GPG_PASSPHRASE} --output ${CWD}/tts_keys.sh  --decrypt tts_keys.sh.gpg
 gpg --batch --yes --passphrase ${GPG_PASSPHRASE} --output ${CWD}/convertkit.sh  --decrypt convertkit.sh.gpg
 gpg --batch --yes --passphrase ${GPG_PASSPHRASE} --output ${CWD}/airtable.sh  --decrypt airtable.sh.gpg

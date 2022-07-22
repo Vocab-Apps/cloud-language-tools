@@ -16,7 +16,7 @@ import redisdb
 import patreon_utils
 import getcheddar_utils as getcheddar_utils_module
 import convertkit
-import secrets
+import clt_secrets as secrets
 import quotas
 import version
 import pprint

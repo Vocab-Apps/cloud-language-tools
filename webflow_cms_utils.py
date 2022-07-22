@@ -1,5 +1,5 @@
 import requests
-import secrets
+import clt_secrets as secrets
 import pprint
 import time
 import json

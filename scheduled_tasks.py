@@ -7,7 +7,7 @@ import json
 import os
 import redisdb
 import user_utils
-import secrets
+import clt_secrets as secrets
 import sentry_sdk
 import cloudlanguagetools.servicemanager
 

@@ -6,7 +6,7 @@ import shutil
 import logging
 import boto3
 import pandas
-import secrets
+import clt_secrets as secrets
 import random
 import urllib.parse
 import cloudlanguagetools

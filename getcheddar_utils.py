@@ -6,7 +6,7 @@ import xml.dom.minidom
 import xml.etree.ElementTree
 import pprint
 import datetime
-import secrets
+import clt_secrets as secrets
 import time
 
 TRACKED_ITEM_CODE='thousand_chars'

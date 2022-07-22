@@ -4,7 +4,7 @@ import logging
 import requests
 import urllib
 import pprint
-import secrets
+import clt_secrets as secrets
 
 class AirtableUtils():
     def __init__(self):

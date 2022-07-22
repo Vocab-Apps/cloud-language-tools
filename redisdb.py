@@ -9,7 +9,7 @@ import logging
 import cloudlanguagetools.constants
 import cloudlanguagetools.errors
 import quotas
-import secrets
+import clt_secrets as secrets
 
 KEY_TYPE_API_KEY = 'api_key'
 KEY_TYPE_PATREON_USER ='patreon_user'

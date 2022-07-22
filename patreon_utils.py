@@ -4,7 +4,7 @@ import redisdb
 import argparse
 import logging
 import pprint
-import secrets
+import clt_secrets as secrets
 
 # prod workflow (app.py/PatreonKey)
 def user_authorized(oauth_code):

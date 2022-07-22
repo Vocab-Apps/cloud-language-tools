@@ -3,7 +3,7 @@ import requests
 import logging
 import pprint
 import time
-import secrets
+import clt_secrets as secrets
 import cloudlanguagetools.constants
 
 CONVERTKIT_THROTTLE_REQUESTS_SLEEP = 0.5

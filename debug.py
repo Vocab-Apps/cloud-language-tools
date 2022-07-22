@@ -13,7 +13,7 @@ import epitran
 import pandas
 import requests
 import re
-import secrets
+import clt_secrets as secrets
 import redisdb
 import cloudlanguagetools
 import cloudlanguagetools.servicemanager

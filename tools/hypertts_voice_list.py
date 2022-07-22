@@ -8,7 +8,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
-import secrets
+import clt_secrets as secrets
 import cloudlanguagetools
 import cloudlanguagetools.servicemanager
 
