@@ -26,7 +26,7 @@ RUN pip3 install git+https://github.com/Patreon/patreon-python
 # install cloudlanguagetools-core requirements, which shoud not change often
 RUN pip3 install clt_spacy==0.1
 RUN pip3 install clt_argostranslate==0.1
-RUN --mount=type=secret,id=gpg_passphrase_file,target=/secrets/gpg_passphrase_file pip3 install clt_wenlin==0.5
+RUN pip3 install clt_wenlin==0.6
 RUN pip3 install clt_requirements==0.1
 # install cloudlanguagetools-core, change version as required
 RUN pip3 install cloudlanguagetools==1.8
