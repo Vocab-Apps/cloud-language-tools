@@ -13,8 +13,8 @@ import cloudlanguagetools
 import cloudlanguagetools.servicemanager
 
 def get_manager():
-    manager = cloudlanguagetools.servicemanager.ServiceManager(secrets.config)
-    manager.configure()    
+    manager = cloudlanguagetools.servicemanager.ServiceManager()
+    manager.configure_default() 
     return manager
 
 def get_voice_list_awesometts():
