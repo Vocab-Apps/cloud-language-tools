@@ -17,8 +17,8 @@ import webflow_cms_utils
 
 
 def get_manager():
-    manager = cloudlanguagetools.servicemanager.ServiceManager(secrets.config)
-    manager.configure()    
+    manager = cloudlanguagetools.servicemanager.ServiceManager()
+    manager.configure_default() 
     return manager
 
 class SoundSampleGeneration():
