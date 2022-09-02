@@ -8,6 +8,8 @@
 
 # running locally:
 # docker run --env-file /home/luc/python/cloud-language-tools-secrets/cloud-language-tools-local  -p 0.0.0.0:8042:8042/tcp lucwastiaux/cloud-language-tools:20220902-7
+# inspecting space usage
+# docker container exec 224e53da8507 du -hc --max-depth=1 /root
 
 FROM ubuntu:20.04
 
