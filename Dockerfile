@@ -26,17 +26,17 @@ RUN wget http://tts.speech.cs.cmu.edu/awb/flite-2.0.5-current.tar.bz2 && tar xvj
 RUN pip3 install git+https://github.com/Patreon/patreon-python
 
 # install cloudlanguagetools-core requirements, which shoud not change often
-RUN pip3 install clt_spacy==0.1
-RUN pip3 install clt_argostranslate==0.4
-RUN pip3 install clt_wenlin==0.7
-RUN pip3 install clt_requirements==0.1
+RUN pip3 install --no-cache-dir clt_spacy==0.1
+RUN pip3 install --no-cache-dir clt_argostranslate==0.5
+RUN pip3 install --no-cache-dir clt_wenlin==0.7
+RUN pip3 install --no-cache-dir clt_requirements==0.1
 
 # this adds any required modules not covered above
 COPY requirements.txt ./
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # install cloudlanguagetools-core, change version as required
-RUN pip3 install cloudlanguagetools==2.4
+RUN pip3 install --no-cache-dir cloudlanguagetools==2.4
 
 # copy app files
 COPY start.sh app.py version.py redisdb.py patreon_utils.py quotas.py convertkit.py airtable_utils.py getcheddar_utils.py user_utils.py scheduled_tasks.py ./
