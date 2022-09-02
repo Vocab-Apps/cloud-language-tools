@@ -34,7 +34,7 @@ COPY requirements.txt ./
 RUN pip3 install -r requirements.txt
 
 # install cloudlanguagetools-core, change version as required
-RUN pip3 install cloudlanguagetools==2.3
+RUN pip3 install cloudlanguagetools==2.4
 
 # copy app files
 COPY start.sh app.py version.py redisdb.py patreon_utils.py quotas.py convertkit.py airtable_utils.py getcheddar_utils.py user_utils.py scheduled_tasks.py ./
