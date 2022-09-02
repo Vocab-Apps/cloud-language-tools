@@ -22,21 +22,24 @@ RUN apt-get update -y && apt-get install -y libasound2 python3-pip git gnupg bui
 # required by Epitran module
 RUN wget http://tts.speech.cs.cmu.edu/awb/flite-2.0.5-current.tar.bz2 && tar xvjf flite-2.0.5-current.tar.bz2 && cd flite-2.0.5-current && ./configure && make && make install && cd testsuite && make lex_lookup && cp lex_lookup /usr/local/bin
 
+# update pip
+RUN pip3 install --upgrade pip
+
 # modules not available on pypi
-RUN pip3 install git+https://github.com/Patreon/patreon-python
+RUN pip3 install git+https://github.com/Patreon/patreon-python && pip3 cache purge
 
 # install cloudlanguagetools-core requirements, which shoud not change often
-RUN pip3 install --no-cache-dir clt_spacy==0.1
-RUN pip3 install --no-cache-dir clt_argostranslate==0.5
-RUN pip3 install --no-cache-dir clt_wenlin==0.7
-RUN pip3 install --no-cache-dir clt_requirements==0.1
+RUN pip3 install --no-cache-dir clt_spacy==0.1 && pip3 cache purge
+RUN pip3 install --no-cache-dir clt_argostranslate==0.5 && pip3 cache purge
+RUN pip3 install --no-cache-dir clt_wenlin==0.7 && pip3 cache purge
+RUN pip3 install --no-cache-dir clt_requirements==0.1 && pip3 cache purge
 
 # this adds any required modules not covered above
 COPY requirements.txt ./
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt && pip3 cache purge
 
 # install cloudlanguagetools-core, change version as required
-RUN pip3 install --no-cache-dir cloudlanguagetools==2.4
+RUN pip3 install --no-cache-dir cloudlanguagetools==2.4 && pip3 cache purge
 
 # copy app files
 COPY start.sh app.py version.py redisdb.py patreon_utils.py quotas.py convertkit.py airtable_utils.py getcheddar_utils.py user_utils.py scheduled_tasks.py ./
