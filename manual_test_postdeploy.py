@@ -66,6 +66,9 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue('voice_key' in voice1)
 
     def test_translation_language_list(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         # pytest test_postdeploy.py -rPP -k 'test_translation_language_list'
 
         response = requests.get(self.get_url('/translation_language_list'))
@@ -83,6 +86,9 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue(len(language1['service']) > 0)
 
     def test_transliteration_language_list(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         # pytest test_postdeploy.py -rPP -k 'test_transliteration_language_list'
 
         response = requests.get(self.get_url('/transliteration_language_list'))
@@ -101,6 +107,9 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_translate(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         # pytest test_postdeploy.py -rPP -k test_translate
 
         source_text = 'Je ne suis pas intéressé.'
@@ -133,6 +142,9 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(data['translated_text'], 'There are many foreigners in China')
 
     def test_translate_all(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')        
+
         # pytest test_api.py -k test_translate_all
         source_text = '成本很低'
         response = requests.post(self.get_url('/translate_all'), json={
@@ -148,6 +160,9 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(data['Watson'], 'Le coût est très bas.')
 
     def test_translate_error(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         source_text = 'Je ne suis pas intéressé.'
         response = requests.post(self.get_url('/translate'), json={
             'text': source_text,
@@ -163,6 +178,9 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_transliteration(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         response = requests.get(self.get_url('/transliteration_language_list'))
         transliteration_language_list = response.json()
 
@@ -248,6 +266,9 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_detection(self):
+        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
+            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
         source_list = [
             'Pouvez-vous me faire le change ?',
             'Pouvez-vous débarrasser la table, s\'il vous plaît?'
