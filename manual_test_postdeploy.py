@@ -443,7 +443,7 @@ class PostDeployTests(unittest.TestCase):
         source_text = "I was reading today's paper."
         from_language = 'en'
         tokenization_key = {
-            'model_name': 'en_core_web_trf'
+            'model_name': 'en'
         }
 
         url = self.get_url('/tokenize_v1')
@@ -460,7 +460,7 @@ class PostDeployTests(unittest.TestCase):
         source_text = "Le nouveau plan d’investissement du gouvernement."
         from_language = 'fr'
         tokenization_key = {
-            'model_name': 'fr_dep_news_trf'
+            'model_name': 'fr'
         }
 
         url = self.get_url('/tokenize_v1')
@@ -476,7 +476,7 @@ class PostDeployTests(unittest.TestCase):
         source_text = "送外卖的人"
         from_language = 'zh_cn'
         tokenization_key = {
-            'model_name': 'chinese_jieba'
+            'model_name': 'zh_jieba'
         }
 
         url = self.get_url('/tokenize_v1')
