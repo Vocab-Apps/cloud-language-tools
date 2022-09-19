@@ -369,6 +369,9 @@ class RequestInstantTrialKey(flask_restful.Resource):
         data = request.json
         email = data['email']
 
+        if len(email) == 0:
+            return {'error': 'must supply email address'}, 401
+
         email_valid, reason = convertkit_client.check_email_valid(email)
         if not email_valid:
             return {'error': reason}, 401

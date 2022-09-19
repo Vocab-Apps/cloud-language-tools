@@ -1248,6 +1248,13 @@ class ApiTests(unittest.TestCase):
         response_data = json.loads(response.data)        
         self.assertEqual(response_data['error'], f'trial API key for {email} already requested')
 
+        # empty email
+        email = ''
+        response = self.client.post('/request_trial_key', json={'email': email})
+        self.assertEqual(response.status_code, 401)
+        response_data = json.loads(response.data)        
+        self.assertEqual(response_data['error'], f'must supply email address')
+
 
 
 
