@@ -1002,7 +1002,7 @@ class ApiTests(unittest.TestCase):
         source_text = "I was reading today's paper."
         from_language = 'en'
         tokenization_key = {
-            'model_name': 'en_core_web_trf'
+            'model_name': 'en'
         }
 
         response = self.client.post('/tokenize_v1', json={
