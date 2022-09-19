@@ -1219,7 +1219,7 @@ class ApiTests(unittest.TestCase):
                 "language_name": "Chinese (Simplified)", 
                 "service": "Spacy", 
                 "tokenization_key": {
-                    "model_name": "chinese_jieba"
+                    "model_name": "zh_jieba"
                 }, 
                 "tokenization_name": "Chinese (Simplified) (Jieba (words)), Spacy"
             }, 
