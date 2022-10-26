@@ -278,8 +278,10 @@ class AudioV2(flask_restful.Resource):
             service = cloudlanguagetools.constants.Service[service_str]
             request_mode = cloudlanguagetools.constants.RequestMode[request_mode_str]
 
-            # add sentry service tag
-            sentry_sdk.set_tag("clt.service", service.name)
+            # instrument sentry transaction
+            transaction = sentry_sdk.Hub.current.scope.transaction
+            if transaction != None:
+                transaction.name = f'audio_v2_{service_str}'
 
             audio_temp_file = manager.get_tts_audio(text, service.name, voice_key, options)
 
