@@ -139,7 +139,7 @@ class PostDeployTests(unittest.TestCase):
 
         data = response.json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['translated_text'], 'There are many foreigners in China')
+        self.assertIn(data['translated_text'], ['There are many foreigners in China', 'There are a lot of foreigners in China'])
 
     def test_translate_all(self):
         if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
