@@ -193,7 +193,7 @@ class ApiTests(unittest.TestCase):
 
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['translated_text'], 'There are many foreigners in China')
+        self.assertIn(data['translated_text'], ['There are many foreigners in China', 'There are a lot of foreigners in China'])
 
     def test_translate_not_authenticated(self):
         source_text = 'Je ne suis pas intéressé.'
