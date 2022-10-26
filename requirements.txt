@@ -1,8 +1,8 @@
-cloudlanguagetools
+cloudlanguagetools>=4.0
 flask
 flask_restful
 gunicorn
 redis
 schedule
 pandas
-sentry-sdk[flask]
+sentry-sdk[flask]>=1.10.1

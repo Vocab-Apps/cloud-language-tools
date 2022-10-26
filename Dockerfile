@@ -37,7 +37,7 @@ COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt && pip3 cache purge
 
 # install cloudlanguagetools-core, change version as required
-RUN pip3 install --no-cache-dir cloudlanguagetools==3.6 && pip3 cache purge
+RUN pip3 install --no-cache-dir cloudlanguagetools==4.0 && pip3 cache purge
 
 # copy app files
 COPY start.sh app.py version.py redisdb.py patreon_utils.py quotas.py convertkit.py airtable_utils.py getcheddar_utils.py user_utils.py scheduled_tasks.py ./
