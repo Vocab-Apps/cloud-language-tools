@@ -36,6 +36,12 @@ print(f'starting up version {version.CLOUD_LANGUAGE_TOOLS_VERSION}')
 # sentry crash reporting
 # ======================
 
+def traces_sampler(sampling_context):
+    if secrets.config['sentry']['environment'] == 'development':
+        return 1.0
+
+    return 0.015
+
 if secrets.config['sentry']['enable']:
     dsn = secrets.config['sentry']['dsn']
     sentry_sdk.init(
@@ -43,7 +49,7 @@ if secrets.config['sentry']['enable']:
         environment=secrets.config['sentry']['environment'],
         integrations=[FlaskIntegration(), RedisIntegration()],
         release=version.CLOUD_LANGUAGE_TOOLS_VERSION,
-        traces_sample_rate=0.023,
+        traces_sampler=traces_sampler,
     )
 
 
