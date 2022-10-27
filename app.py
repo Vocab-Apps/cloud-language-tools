@@ -37,8 +37,10 @@ print(f'starting up version {version.CLOUD_LANGUAGE_TOOLS_VERSION}')
 # ======================
 
 def traces_sampler(sampling_context):
-    if secrets.config['sentry']['environment'] == 'development':
-        return 1.0
+    # on digitalocean, the languagedata_v1 query is called all the time, so without additional filtering 
+    # this creates too many transactions
+    # if secrets.config['sentry']['environment'] == 'development':
+    #     return 1.0
 
     return 0.015
 
