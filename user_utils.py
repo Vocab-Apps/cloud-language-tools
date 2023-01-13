@@ -573,12 +573,14 @@ class UserUtils():
         # make the logic a bit easier by removing nans
         data_df['tags'] = data_df['tags'].fillna("").apply(list)
         data_df['clients'] = data_df['clients'].fillna("").apply(list)
+        data_df['services'] = data_df['services'].fillna("").apply(list)
         data_df['audio_languages'] = data_df['audio_language_enum'].fillna("").apply(list)
 
         for index, row in data_df.iterrows():
             email = row['email']
             tags = row['tags']
             clients = row['clients']
+            services = row['services']
 
             for client in clients:
                 tag_name = f'client_{client}'
@@ -587,6 +589,15 @@ class UserUtils():
                         logging.info(f'tagging {email} with {tag_name}')
                         tag_id = self.convertkit_client.full_tag_id_map[tag_name]
                         self.convertkit_client.tag_user(email, tag_id)
+
+            for service in services:
+                service = service.lower()
+                tag_name = f'service_{service}'
+                if tag_name in self.convertkit_client.full_tag_id_map:
+                    if tag_name not in tags:
+                        logging.info(f'tagging {email} with {tag_name}')
+                        tag_id = self.convertkit_client.full_tag_id_map[tag_name]
+                        self.convertkit_client.tag_user(email, tag_id)                        
 
             audio_languages = row['audio_languages']
             for audio_language in audio_languages:
