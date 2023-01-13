@@ -42,21 +42,21 @@ class ConvertKit():
     TAG_IGNORE_LIST_PATREON = TRIAL_SPECIFIC_TAG_LIST + GETCHEDDAR_SPECIFIC_TAG_LIST
 
     def __init__(self):
-        self.api_key = os.environ['CONVERTKIT_API_KEY']
-        self.api_secret = os.environ['CONVERTKIT_API_SECRET']
-
-        self.tag_id_api_requested = int(os.environ['CONVERTKIT_TRIAL_API_KEY_REQUESTED_TAG'])
-        self.tag_id_api_ready = int(os.environ['CONVERTKIT_TRIAL_API_KEY_READY_TAG'])
-        self.tag_id_patreon_api_ready = int(os.environ['CONVERTKIT_PATREON_API_KEY_READY_TAG'])
-        self.tag_id_trial_extended = int(os.environ['CONVERTKIT_TRIAL_EXTENDED_TAG'])
-        self.tag_id_trial_inactive = int(os.environ['CONVERTKIT_TRIAL_INACTIVE_TAG'])
-        self.tag_id_trial_user = int(os.environ['CONVERTKIT_TRIAL_USER_TAG'])
-        self.tag_id_trial_end_reach_out = int(os.environ['CONVERTKIT_TRIAL_END_REACH_OUT_TAG'])
-        self.tag_id_trial_patreon_convert = int(os.environ['CONVERTKIT_TRIAL_PATREON_CONVERT_TAG'])
-        self.tag_id_patreon = int(os.environ['CONVERTKIT_PATREON_USER_TAG'])
-
         self.enable = secrets.config['convertkit']['enable']
         if self.enable:
+            self.api_key = secrets.config['convertkit']['CONVERTKIT_API_KEY']
+            self.api_secret = secrets.config['convertkit']['CONVERTKIT_API_SECRET']
+
+            self.tag_id_api_requested = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_API_KEY_REQUESTED_TAG'])
+            self.tag_id_api_ready = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_API_KEY_READY_TAG'])
+            self.tag_id_patreon_api_ready = int(secrets.config['convertkit']['CONVERTKIT_PATREON_API_KEY_READY_TAG'])
+            self.tag_id_trial_extended = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_EXTENDED_TAG'])
+            self.tag_id_trial_inactive = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_INACTIVE_TAG'])
+            self.tag_id_trial_user = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_USER_TAG'])
+            self.tag_id_trial_end_reach_out = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_END_REACH_OUT_TAG'])
+            self.tag_id_trial_patreon_convert = int(secrets.config['convertkit']['CONVERTKIT_TRIAL_PATREON_CONVERT_TAG'])
+            self.tag_id_patreon = int(secrets.config['convertkit']['CONVERTKIT_PATREON_USER_TAG'])
+
             self.getcheddar_user_form_id = secrets.config['convertkit']['getcheddar_user_form_id']
             self.tag_id_getcheddar_user = secrets.config['convertkit']['tag_ig_getchedar_user']
             self.tag_id_disposable_email = secrets.config['convertkit']['tag_id_disposable_email']
