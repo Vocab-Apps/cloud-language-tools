@@ -6,3 +6,4 @@ redis
 schedule
 pandas
 sentry-sdk[flask]>=1.10.1
+patreon @ git+https://github.com/Patreon/patreon-python
