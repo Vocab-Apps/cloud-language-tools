@@ -135,6 +135,44 @@ class TestQuotas(unittest.TestCase):
         self.assertEqual(usage_slice_monthly_patreon_user.over_quota(249999, 2), False)
         self.assertEqual(usage_slice_monthly_patreon_user.over_quota(250001, 2), True)
 
+    def test_quotas_easypronunciation(self):
+        # restrict daily usage for a given user
+        usage_slice_daily_easypronuncation_user = quotas.UsageSlice(
+            cloudlanguagetools.constants.RequestType.transliteration,
+            cloudlanguagetools.constants.UsageScope.User, 
+            cloudlanguagetools.constants.UsagePeriod.daily, 
+            cloudlanguagetools.constants.Service.EasyPronunciation,
+            'api_key_1',
+            cloudlanguagetools.constants.ApiKeyType.getcheddar,
+            {})
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17000, 2000), False)
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17001, 2000), True)
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17000, 2001), True)
+
+        usage_slice_monthly_easypronuncation_user = quotas.UsageSlice(
+            cloudlanguagetools.constants.RequestType.transliteration,
+            cloudlanguagetools.constants.UsageScope.User, 
+            cloudlanguagetools.constants.UsagePeriod.monthly, 
+            cloudlanguagetools.constants.Service.EasyPronunciation,
+            'api_key_1',
+            cloudlanguagetools.constants.ApiKeyType.getcheddar,
+            {})        
+        self.assertEqual(usage_slice_monthly_easypronuncation_user.over_quota(17001, 2000), False)
+        self.assertEqual(usage_slice_monthly_easypronuncation_user.over_quota(17000, 2001), False)            
+
+    def test_quotas_forvo(self):
+        # restrict daily usage for a given user
+        usage_slice_daily_forvo_user = quotas.UsageSlice(
+            cloudlanguagetools.constants.RequestType.audio,
+            cloudlanguagetools.constants.UsageScope.User, 
+            cloudlanguagetools.constants.UsagePeriod.daily, 
+            cloudlanguagetools.constants.Service.Forvo,
+            'api_key_1',
+            cloudlanguagetools.constants.ApiKeyType.getcheddar,
+            {})
+        self.assertEqual(usage_slice_daily_forvo_user.over_quota(24585, 7000), False)
+        self.assertEqual(usage_slice_daily_forvo_user.over_quota(24585, 7001), True)
+        self.assertEqual(usage_slice_daily_forvo_user.over_quota(100000, 7000), False)        
 
     def test_build_key_suffix(self):
         # clt:usage:user:daily:20210209:Naver:audio:zrrVDK3svzDOLzI6

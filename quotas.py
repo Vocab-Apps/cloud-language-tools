@@ -8,6 +8,11 @@ TRIAL_USER_CHARACTER_LIMIT = 5000
 TRIAL_EXTENDED_USER_CHARACTER_LIMIT = 50000
 TRIAL_VIP_USER_CHARACTER_LIMIT = 100000
 
+EASYPRONUNCIATION_USER_DAILY_MAX_REQUESTS = 2000
+EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS = 17000
+
+FORVO_USER_DAILY_MAX_REQUESTS = 7000
+
 GETCHEDDAR_CHAR_MULTIPLIER = 1000.0
 
 AZURE_CJK_CHAR_MULTIPLIER = 2
@@ -150,6 +155,18 @@ class UsageSlice():
 
 
     def over_quota(self, characters, requests) -> bool:
+        # some services have daily restrictions
+        if self.usage_scope == cloudlanguagetools.constants.UsageScope.User:
+            if self.usage_period == cloudlanguagetools.constants.UsagePeriod.daily:
+                if self.service == cloudlanguagetools.constants.Service.EasyPronunciation:
+                    if requests > EASYPRONUNCIATION_USER_DAILY_MAX_REQUESTS:
+                        return True
+                    if characters > EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS:
+                        return True
+                if self.service == cloudlanguagetools.constants.Service.Forvo:
+                    if requests > FORVO_USER_DAILY_MAX_REQUESTS:
+                        return True
+
         # print(f'over_quota: usage_period: {self.usage_period} api_key_type: {self.api_key_type}')
         if self.api_key_type == cloudlanguagetools.constants.ApiKeyType.getcheddar:
             if self.usage_period == cloudlanguagetools.constants.UsagePeriod.recurring:
