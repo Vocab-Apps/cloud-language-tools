@@ -10,5 +10,6 @@ git tag -a ${GIT_TAG} -m "version ${GIT_TAG}"
 git push origin ${GIT_TAG}
 
 # docker build
+export DOCKER_BUILDKIT=1
 docker build -t lucwastiaux/cloud-language-tools:${VERSION_NUMBER} -f Dockerfile .
 docker push lucwastiaux/cloud-language-tools:${VERSION_NUMBER}
