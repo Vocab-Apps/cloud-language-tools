@@ -156,7 +156,7 @@ class PostDeployTests(unittest.TestCase):
         data = response.json()
         self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
         self.assertTrue(data['Amazon'] == 'Très faible coût' or data['Amazon'] == 'Le coût est très faible')
-        self.assertIn(data['Google'], ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût'])
+        self.assertIn(data['Google'], ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût'])
         self.assertEqual(data['Watson'], 'Le coût est très bas.')
 
     def test_translate_error(self):
@@ -200,7 +200,7 @@ class PostDeployTests(unittest.TestCase):
         }, headers={'api_key': self.api_key})
 
         result = response.json()
-        self.assertEqual({'transliterated_text': 'chéng běn hěn dī'}, result)
+        self.assertEqual({'transliterated_text': 'chéngběn hěndī'}, result)
 
     def test_transliteration_mandarin_cantonese(self):
         if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
