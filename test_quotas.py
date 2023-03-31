@@ -145,9 +145,9 @@ class TestQuotas(unittest.TestCase):
             'api_key_1',
             cloudlanguagetools.constants.ApiKeyType.getcheddar,
             {})
-        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17000, 2000), False)
-        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17001, 2000), True)
-        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17000, 2001), True)
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(136000, 2000), False)
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(136001, 2000), True)
+        self.assertEqual(usage_slice_daily_easypronuncation_user.over_quota(17000, 2001), False)
 
         usage_slice_monthly_easypronuncation_user = quotas.UsageSlice(
             cloudlanguagetools.constants.RequestType.transliteration,

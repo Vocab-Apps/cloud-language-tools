@@ -8,8 +8,7 @@ TRIAL_USER_CHARACTER_LIMIT = 5000
 TRIAL_EXTENDED_USER_CHARACTER_LIMIT = 50000
 TRIAL_VIP_USER_CHARACTER_LIMIT = 100000
 
-EASYPRONUNCIATION_USER_DAILY_MAX_REQUESTS = 2000
-EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS = 17000
+EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS = 136000
 
 FORVO_USER_DAILY_MAX_REQUESTS = 7000
 
@@ -159,8 +158,6 @@ class UsageSlice():
         if self.usage_scope == cloudlanguagetools.constants.UsageScope.User:
             if self.usage_period == cloudlanguagetools.constants.UsagePeriod.daily:
                 if self.service == cloudlanguagetools.constants.Service.EasyPronunciation:
-                    if requests > EASYPRONUNCIATION_USER_DAILY_MAX_REQUESTS:
-                        return True
                     if characters > EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS:
                         return True
                 if self.service == cloudlanguagetools.constants.Service.Forvo:
