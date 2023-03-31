@@ -311,7 +311,7 @@ class ApiTests(unittest.TestCase):
         }, headers={'api_key': self.api_key})
 
         result = json.loads(response.data)
-        self.assertEqual({'transliterated_text': 'chéng běn hěn dī'}, result)
+        self.assertEqual({'transliterated_text': 'chéngběn hěndī'}, result)
 
     def test_transliteration_mandarin_cantonese(self):
         response = self.client.get('/transliteration_language_list')
