@@ -68,7 +68,7 @@ def setup_tasks():
         logging.info('setting up user_data tasks')
         report_getcheddar_usage()
         update_airtable()
-        schedule.every(15).minutes.do(update_airtable)
+        schedule.every(6).hours.do(update_airtable)
         schedule.every(6).hours.do(report_getcheddar_usage)
     if secrets.config['scheduled_tasks']['backup_redis']:
         logging.info('setting up redis_backup')
