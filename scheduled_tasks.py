@@ -35,30 +35,31 @@ def backup_redis_db():
 
 def update_airtable():
     try:
-        logging.info('updating airtable')
+        logging.info('START TASK updating airtable')
         utils = user_utils.UserUtils()
         utils.update_airtable_all()
-        logging.info('finished updating airtable')
+        logging.info('FINISHED TASK updating airtable')
     except:
         logging.exception(f'could not update airtable')    
 
 def report_getcheddar_usage():
     try:
-        logging.info('reporting getcheddar usage')
+        logging.info('START TASK reporting getcheddar usage')
         utils = user_utils.UserUtils()
         utils.report_getcheddar_usage_all_users()
-        logging.info('finished reporting getcheddar usage')
+        logging.info('FINISHED TASK reporting getcheddar usage')
     except:
         logging.exception(f'could not report getcheddar usage')
 
 def update_language_data():
     try:    
-        logging.info('udpating language data')
+        logging.info('START TASK updating language data')
         manager = cloudlanguagetools.servicemanager.ServiceManager()
         manager.configure_default()
         language_data = manager.get_language_data_json()
         redis_connection = redisdb.RedisDb()
         redis_connection.store_language_data(language_data)
+        logging.info('FINISHED TASK updating language data')
     except:
         logging.exception(f'could not update language_data')
 
