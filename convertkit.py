@@ -6,6 +6,8 @@ import time
 import clt_secrets as secrets
 import cloudlanguagetools.constants
 
+logger = logging.getLogger(__name__)
+
 CONVERTKIT_THROTTLE_REQUESTS_SLEEP = 0.5
 
 class ConvertKit():
@@ -87,15 +89,15 @@ class ConvertKit():
             response = requests.get(url, params=querystring)
             if response.status_code == 200:
                 data = response.json()
-                # logging.info(f'debounce.io result: {pprint.pformat(data)}')
+                # logger.info(f'debounce.io result: {pprint.pformat(data)}')
                 # print(data)
                 if data['debounce']['result'] == 'Invalid' and data['debounce']['reason'] == 'Disposable':
-                    logging.info(f'found disposable email: {email}')
+                    logger.info(f'found disposable email: {email}')
                     return False
             else:
-                logging.error(f'received error: {response.status_code}: {response.text}')
+                logger.error(f'received error: {response.status_code}: {response.text}')
         except:
-            logging.exception(f'could not perform debounce query to validate {email}')
+            logger.exception(f'could not perform debounce query to validate {email}')
         return True # true by default
 
     # verify that an email is good and return reason if not
@@ -111,14 +113,14 @@ class ConvertKit():
             response = requests.get(url, params=querystring)
             if response.status_code == 200:
                 data = response.json()
-                logging.debug(f'debounce.io result: {pprint.pformat(data)}')
+                logger.debug(f'debounce.io result: {pprint.pformat(data)}')
                 # print(data)
                 result = data['debounce']['result']
                 reason = data['debounce']['reason']
                 if result != 'Safe to Send':
                     return False, f'email not valid: {result}, {reason}'
             else:
-                logging.error(f'debounce.io: received error: {response.status_code}: {response.text}')
+                logger.error(f'debounce.io: received error: {response.status_code}: {response.text}')
 
             # use verifyemail.io second
             # =========================
@@ -128,20 +130,20 @@ class ConvertKit():
                 response = requests.get(url)
                 if response.status_code == 200:
                     data = response.json()
-                    logging.debug(f'verifyemail response: {pprint.pformat(data)}')
+                    logger.debug(f'verifyemail response: {pprint.pformat(data)}')
                     if data['disposable'] == True:
                         return False, f'email not valid: disposable address'
             else:
-                logging.error(f'verifyemail.io: received error: {response.status_code}: {response.text}')                    
+                logger.error(f'verifyemail.io: received error: {response.status_code}: {response.text}')                    
                     
         except:
-            logging.exception(f'could not perform debounce query to validate {email}')
+            logger.exception(f'could not perform debounce query to validate {email}')
         return True, None # true by default
 
 
     def register_getcheddar_user(self, email, api_key, update_url, cancel_url):
         if self.enable:
-            logging.info(f'registering new getcheddar user on convertkit')
+            logger.info(f'registering new getcheddar user on convertkit')
             url = f'https://api.convertkit.com/v3/forms/{self.getcheddar_user_form_id}/subscribe'
             response = requests.post(url, json={
                     "api_key": self.api_key,
@@ -153,7 +155,7 @@ class ConvertKit():
                     }
             }, timeout=cloudlanguagetools.constants.RequestTimeout)
             if response.status_code != 200:
-                logging.error(f'could not subscribe user to form: {response.content}')
+                logger.error(f'could not subscribe user to form: {response.content}')
 
 
     def tag_user_instant_trial(self, email, api_key, trial_quota):
@@ -168,7 +170,7 @@ class ConvertKit():
                     }
             }, timeout=cloudlanguagetools.constants.RequestTimeout)
             if response.status_code != 200:
-                logging.error(f'could not tag user: {response.content}')
+                logger.error(f'could not tag user: {response.content}')
 
     def tag_user_api_ready(self, email, api_key, trial_quota):
         url = f'https://api.convertkit.com/v3/tags/{self.tag_id_api_ready}/subscribe'
@@ -181,7 +183,7 @@ class ConvertKit():
                 }
         }, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code != 200:
-            logging.error(f'could not tag user: {response.content}')
+            logger.error(f'could not tag user: {response.content}')
 
     def tag_user_patreon_api_ready(self, email, api_key):
         url = f'https://api.convertkit.com/v3/tags/{self.tag_id_patreon_api_ready}/subscribe'
@@ -193,13 +195,13 @@ class ConvertKit():
                 }
         }, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code != 200:
-            logging.error(f'could not tag user: {response.content}')
+            logger.error(f'could not tag user: {response.content}')
 
     def tag_user_disposable_email(self, email):
         self.tag_user(email, self.tag_id_disposable_email)
 
     def tag_user(self, email, tag_id):
-        logging.info(f'tagging {email} with {tag_id}')
+        logger.info(f'tagging {email} with {tag_id}')
         url = f'https://api.convertkit.com/v3/tags/{tag_id}/subscribe'
         response = requests.post(url, json={
                 "api_key": self.api_key,
@@ -208,12 +210,12 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         if response.status_code != 200:
-            logging.error(f'could not tag user email: [{email}]: response: {response.content}')
+            logger.error(f'could not tag user email: [{email}]: response: {response.content}')
         else:
-            logging.info(f'tagged user with tag_id {tag_id}: {email}')
+            logger.info(f'tagged user with tag_id {tag_id}: {email}')
 
     def untag_user(self, subscriber_id, tag_id):
-        logging.info(f'untagging {subscriber_id} with {tag_id}')
+        logger.info(f'untagging {subscriber_id} with {tag_id}')
         url = f'https://api.convertkit.com/v3/subscribers/{subscriber_id}/tags/{tag_id}'
         response = requests.delete(url, json={
                 "api_secret": self.api_secret
@@ -222,9 +224,9 @@ class ConvertKit():
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         if response.status_code != 200:
             error_message = f'could not untag user subscriber_id {subscriber_id}, tag_id: {tag_id} status_code: {response.status_code} url: {url}'
-            logging.error(error_message)
+            logger.error(error_message)
         else:
-            logging.info(f'untagged user with tag_id {tag_id}: {subscriber_id}')
+            logger.info(f'untagged user with tag_id {tag_id}: {subscriber_id}')
 
     def user_set_fields(self, email, subscriber_id, field_map):
         url = f'https://api.convertkit.com/v3/subscribers/{subscriber_id}'
@@ -235,9 +237,9 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)        
         if response.status_code != 200:
-            logging.error(f'could not update user {email}, subscriber_id: {subscriber_id} response: {response.content}')
+            logger.error(f'could not update user {email}, subscriber_id: {subscriber_id} response: {response.content}')
         else:
-            logging.info(f'updated user {email}, {subscriber_id} fields: {field_map}')
+            logger.info(f'updated user {email}, {subscriber_id} fields: {field_map}')
 
     def tag_user_set_fields(self, email, tag_id, field_map):
         url = f'https://api.convertkit.com/v3/tags/{tag_id}/subscribe'
@@ -249,9 +251,9 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)        
         if response.status_code != 200:
-            logging.error(f'could not tag user: {response.content}')            
+            logger.error(f'could not tag user: {response.content}')            
         else:
-            logging.info(f'tagged user with tag_id {tag_id}: {email}')
+            logger.info(f'tagged user with tag_id {tag_id}: {email}')
 
     def tag_user_trial_extended(self, email, trial_quota):
         self.tag_user_set_fields(email, self.tag_id_trial_extended, {'trial_quota': trial_quota})
@@ -344,7 +346,7 @@ class ConvertKit():
         return data['tags']
 
     def populate_tag_map(self):
-        logging.info('populating tag map')
+        logger.info('populating tag map')
         url = f'https://api.convertkit.com/v3/tags?api_key={self.api_key}'
         response = requests.get(url)
         # throttle
