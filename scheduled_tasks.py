@@ -13,7 +13,8 @@ import cloudlanguagetools.servicemanager
 
 def backup_redis_db():
     try:
-        logging.info('backing up redis db')
+        logging.info('START TASK backing up redis db')
+        start_time = time.time()
         connection = redisdb.RedisDb()
 
         session = boto3.session.Session()
@@ -29,6 +30,8 @@ def backup_redis_db():
         file_name = f'redis_backup_{time_str}.json'
         client.put_object(Body=str(json.dumps(full_db_dump)), Bucket=bucket_name, Key=file_name)
         logging.info(f'wrote {file_name} to {bucket_name}')
+        end_time = time.time()
+        logging.info(f'END TASK backing up redis db, time elapsed: {end_time - start_time}')
     except:
         logging.exception(f'could not backup redis db')
 
@@ -36,9 +39,11 @@ def backup_redis_db():
 def update_airtable():
     try:
         logging.info('START TASK updating airtable')
+        start_time = time.time()
         utils = user_utils.UserUtils()
         utils.update_airtable_all()
-        logging.info('FINISHED TASK updating airtable')
+        end_time = time.time()
+        logging.info(f'FINISHED TASK updating airtable, time elapsed: {end_time - start_time}')
     except:
         logging.exception(f'could not update airtable')    
 
