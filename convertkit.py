@@ -237,7 +237,7 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)        
         if response.status_code != 200:
-            logger.error(f'could not update user {email}, subscriber_id: {subscriber_id} response: {response.content}')
+            logger.error(f'could not update user {email}, subscriber_id: {subscriber_id} response: {response.content}, possible reason: user unsubscribed or deleted')
         else:
             logger.info(f'updated user {email}, {subscriber_id} fields: {field_map}')
 
