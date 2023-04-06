@@ -87,16 +87,16 @@ def update_language_data():
 
 def setup_tasks():
     logging.info('running tasks once')
+    if secrets.config['scheduled_tasks']['backup_redis']:
+        logging.info('setting up redis_backup')
+        backup_redis_db()
+        schedule.every(2).hour.do(backup_redis_db)
     if secrets.config['scheduled_tasks']['user_data']:
         logging.info('setting up user_data tasks')
         report_getcheddar_usage()
         update_airtable()
         schedule.every(6).hours.do(update_airtable)
         schedule.every(6).hours.do(report_getcheddar_usage)
-    if secrets.config['scheduled_tasks']['backup_redis']:
-        logging.info('setting up redis_backup')
-        backup_redis_db()
-        schedule.every(2).hour.do(backup_redis_db)
     if secrets.config['scheduled_tasks']['language_data']:
         logging.info('setting up language_data')
         update_language_data()
