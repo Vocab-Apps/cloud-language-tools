@@ -378,6 +378,7 @@ class RequestInstantTrialKey(flask_restful.Resource):
     def post(self):
         data = request.json
         email = data['email']
+        email = redis_connection.normalize_trial_email(email)
 
         if len(email) == 0:
             return {'error': 'must supply email address'}, 401
@@ -427,6 +428,8 @@ class ConvertKitRequestTrialKey(flask_restful.Resource):
         data = request.json
         subscriber_id = data['subscriber']['id']
         email_address = data['subscriber']['email_address']
+
+        email_address = redis_connection.normalize_trial_email(email_address)
 
         email_valid, reason = convertkit_client.check_email_valid(email_address)
         if not email_valid:

@@ -112,7 +112,7 @@ class RedisDb():
         
     # prod workflow
     def normalize_trial_email(self, email):
-        return email.lower()
+        return email.lower().strip()
 
     def trial_user_key_exists(self, email):
         email = self.normalize_trial_email(email)
