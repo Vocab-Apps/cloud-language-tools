@@ -17,6 +17,8 @@ def backup_redis_db():
         start_time = time.time()
         connection = redisdb.RedisDb()
 
+        # Digital ocean spaces
+        # ====================
         session = boto3.session.Session()
         client = session.client('s3',
                                 region_name=os.environ['SPACE_REGION'],
@@ -28,8 +30,23 @@ def backup_redis_db():
         full_db_dump = connection.full_db_dump()
         time_str = datetime.datetime.now().strftime('%H')
         file_name = f'redis_backup_{time_str}.json'
-        client.put_object(Body=str(json.dumps(full_db_dump)), Bucket=bucket_name, Key=file_name)
+        data_str = str(json.dumps(full_db_dump))
+        client.put_object(Body=data_str, Bucket=bucket_name, Key=file_name)
         logging.info(f'wrote {file_name} to {bucket_name}')
+
+        # Wasabi
+        # ======
+        logging.info('starting backup to wasabi')
+        session = boto3.session.Session()
+        client = session.client('s3',
+                                endpoint_url=secrets.config['wasabi']['endpoint_url'],
+                                aws_access_key_id=secrets.config['wasabi']['access_key'],
+                                aws_secret_access_key=secrets.config['wasabi']['secret_key'])
+        bucket_name = secrets.config['wasabi']['bucket_name']
+        file_name = f'redis_backup.json'
+        client.put_object(Body=data_str, Bucket=bucket_name, Key=file_name)
+        logging.info('finished backup to wasabi')
+
         end_time = time.time()
         logging.info(f'END TASK backing up redis db, time elapsed: {end_time - start_time}')
     except:
@@ -79,7 +96,7 @@ def setup_tasks():
     if secrets.config['scheduled_tasks']['backup_redis']:
         logging.info('setting up redis_backup')
         backup_redis_db()
-        schedule.every(1).hour.do(backup_redis_db)
+        schedule.every(2).hour.do(backup_redis_db)
     if secrets.config['scheduled_tasks']['language_data']:
         logging.info('setting up language_data')
         update_language_data()
