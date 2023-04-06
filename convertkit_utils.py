@@ -163,7 +163,7 @@ def configure_addtag_webhook_patreonuser():
 
 def verify_email():
     client = convertkit.ConvertKit()
-    input_email = 'luc.wastiaux@xsmail.com'
+    input_email = 'gavad73385@vootin.com'
     email_valid, reason = client.check_email_valid(input_email)
     print(f'{input_email}: email_valid: {email_valid}, reason: {reason}')
 
