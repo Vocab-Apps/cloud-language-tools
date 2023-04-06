@@ -77,6 +77,7 @@ class ConvertKit():
 
         self.full_tag_id_map = {} 
 
+    # deprecated
     def email_valid(self, email):
         if not self.enable_debounce:
             return True

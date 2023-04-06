@@ -428,8 +428,9 @@ class ConvertKitRequestTrialKey(flask_restful.Resource):
         subscriber_id = data['subscriber']['id']
         email_address = data['subscriber']['email_address']
 
-        email_valid = convertkit_client.email_valid(email_address)
+        email_valid, reason = convertkit_client.check_email_valid(email_address)
         if not email_valid:
+            logging.warn(f'trial email address invalid: {email_address}, reason: {reason}')
             convertkit_client.tag_user_disposable_email(email_address)
             return
 
