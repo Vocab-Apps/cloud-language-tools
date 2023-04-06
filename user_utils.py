@@ -28,7 +28,7 @@ class UserUtils():
         self.getcheddar_utils = getcheddar_utils.GetCheddarUtils()
 
     def get_full_api_key_list(self):
-        logging.info('getting full API key list')
+        logger.info('getting full API key list')
         api_key_list = self.redis_connection.list_api_keys()
         return api_key_list        
 
@@ -66,7 +66,7 @@ class UserUtils():
     
 
     def get_patreon_users_df(self):
-        logging.info(f'getting patreon user data')
+        logger.info(f'getting patreon user data')
         user_list = self.patreon_utils.get_patreon_user_ids()
         user_list_df = pandas.DataFrame(user_list)
         user_list_df = user_list_df.rename(columns={'user_id': 'patreon_user_id'})
@@ -76,12 +76,12 @@ class UserUtils():
     # -------------------------------
 
     def get_monthly_usage_data(self):
-        logging.info('getting current month usage data')
+        logger.info('getting current month usage data')
         pattern = 'usage:user:monthly:' + datetime.datetime.now().strftime("%Y%m")
         return self.get_usage_data(pattern, 'monthly_cost', 'monthly_chars')
 
     def get_prev_monthly_usage_data(self):
-        logging.info('getting previous month usage data')
+        logger.info('getting previous month usage data')
         prev_month_datetime = datetime.datetime.now() + datetime.timedelta(days=-31)
         pattern = 'usage:user:monthly:' + prev_month_datetime.strftime("%Y%m")
         return self.get_usage_data(pattern, 'prev_monthly_cost', 'prev_monthly_chars')
@@ -90,7 +90,7 @@ class UserUtils():
     # -----------------------------
 
     def get_global_monthly_usage_data(self):
-        logging.info('getting current global month usage data')
+        logger.info('getting current global month usage data')
         pattern = 'usage:global:monthly'
         return self.get_global_usage_data(pattern)
 
@@ -98,7 +98,7 @@ class UserUtils():
     # ---------------------------
 
     def get_global_daily_usage_data(self):
-        logging.info('getting previous global daily usage data')
+        logger.info('getting previous global daily usage data')
         pattern = 'usage:global:daily'
         return self.get_global_usage_data(pattern)
 
@@ -170,7 +170,7 @@ class UserUtils():
         return combined_df
 
     def get_user_tracking_data(self, api_key_list):
-        logging.info('getting user tracking data')
+        logger.info('getting user tracking data')
 
         def process_languages(hash_data):
             language_list = hash_data.keys()
@@ -249,7 +249,7 @@ class UserUtils():
             email = row['email']
             patreon_user_id = row['patreon_user_id']
             api_key = row['api_key']
-            logging.error(f'could not locate patreon customer on convertkit email: {email} patreon_user_id: {patreon_user_id} api_key: {api_key}')
+            logger.error(f'could not locate patreon customer on convertkit email: {email} patreon_user_id: {patreon_user_id} api_key: {api_key}')
 
         combined_df = pandas.merge(combined_df, monthly_usage_data_df, how='left', on='api_key')
         combined_df = pandas.merge(combined_df, prev_monthly_usage_data_df, how='left', on='api_key')
@@ -276,12 +276,12 @@ class UserUtils():
         return self.get_dataframe_from_subscriber_list(subscribers)
 
     def get_convertkit_patreon_users(self):
-        logging.info(f'getting list of patreon users from convertkit')
+        logger.info(f'getting list of patreon users from convertkit')
         subscribers = self.convertkit_client.list_patreon_users()
         return self.get_dataframe_from_subscriber_list(subscribers)
 
     def get_convertkit_getcheddar_users(self):
-        logging.info(f'getting list of getcheddar users from convertkit')
+        logger.info(f'getting list of getcheddar users from convertkit')
         subscribers = self.convertkit_client.list_getcheddar_users()
         return self.get_dataframe_from_subscriber_list(subscribers)
 
@@ -313,7 +313,7 @@ class UserUtils():
         return users_df
 
     def get_convertkit_dataframe_for_tag(self, tag_id, tag_name):
-        logging.info(f'getting dataframe for tag {tag_name}')
+        logger.info(f'getting dataframe for tag {tag_name}')
         subscribers = self.convertkit_client.list_subscribers_tag(tag_id)
         if len(subscribers) == 0:
             return pandas.DataFrame()
@@ -323,7 +323,7 @@ class UserUtils():
         return data_df
 
     def get_convertkit_tag_data(self, tag_ignore_list):
-        logging.info(f'getting convertkit tag data, tag_ignore_list: {tag_ignore_list}')
+        logger.info(f'getting convertkit tag data, tag_ignore_list: {tag_ignore_list}')
         self.convertkit_client.populate_tag_map()
 
         tag_id_map = {tag_name:tag_id for tag_name, tag_id in self.convertkit_client.full_tag_id_map.items() if tag_name not in tag_ignore_list}
@@ -371,33 +371,33 @@ class UserUtils():
 
 
         # get convertkit subscriber ids
-        logging.info('getting convertkit trial users')
+        logger.info('getting convertkit trial users')
         convertkit_trial_users_df = self.get_convertkit_trial_users()
 
         # get convertkit canceled users
-        logging.info('getting convertkit canceled users')
+        logger.info('getting convertkit canceled users')
         canceled_df = self.get_convertkit_canceled_users()
 
         # get user tracking data
-        logging.info('getting user tracking data')
+        logger.info('getting user tracking data')
         tracking_data_df = self.get_user_tracking_data(api_key_list)
         
         # get character entitlement
-        logging.info('getting trial user entitlement')
+        logger.info('getting trial user entitlement')
         entitlement = self.redis_connection.get_trial_user_entitlement(flat_api_key_list)
         entitlement_df = pandas.DataFrame(entitlement)
         # get usage
-        logging.info('getting trial user usage')
+        logger.info('getting trial user usage')
         api_key_usage = self.redis_connection.get_trial_user_usage(flat_api_key_list)
         api_key_usage_df = pandas.DataFrame(api_key_usage)
 
         # monthly usage data
-        logging.info('getting monthly usage')
+        logger.info('getting monthly usage')
         monthly_usage_data_df = self.get_monthly_usage_data()
         prev_monthly_usage_data_df = self.get_prev_monthly_usage_data()
 
         # join data together
-        logging.info('joining data')
+        logger.info('joining data')
         combined_df = pandas.merge(api_key_list_df, tracking_data_df, how='left', on='api_key')
         combined_df = pandas.merge(combined_df, convertkit_trial_users_df, how='left', on='email')
         # locate missed joins
@@ -405,7 +405,7 @@ class UserUtils():
         for index, row in convertkit_missed_joins_df.iterrows():
             email = row['email']
             api_key = row['api_key']
-            logging.error(f'could not locate trial customer on convertkit email: {email} api_key: {api_key}')
+            logger.error(f'could not locate trial customer on convertkit email: {email} api_key: {api_key}')
 
         combined_df = pandas.merge(combined_df, canceled_df, how='left', on='subscriber_id')
         combined_df = pandas.merge(combined_df, tag_data_df, how='left', on='subscriber_id')
@@ -426,15 +426,15 @@ class UserUtils():
         combined_df['character_limit'] = combined_df['character_limit'].astype(int)
 
         if not readonly:
-            logging.info('update and tag convertkit users')
+            logger.info('update and tag convertkit users')
             self.update_tags_convertkit_users(combined_df)
-            logging.info('update usage for convertkit trial users')
+            logger.info('update usage for convertkit trial users')
             self.update_usage_convertkit_trial_users(combined_df)
 
         return combined_df
 
     def cleanup_user_data_trial(self, api_key_list):
-        logging.info('cleaning up trial users')
+        logger.info('cleaning up trial users')
 
         api_key_list_df = self.get_api_key_list_df(api_key_list, 'trial')
         api_key_list_df = api_key_list_df[['api_key', 'email']]
@@ -466,21 +466,21 @@ class UserUtils():
 
         # identify api key which are in redis but not a convertkit trial user
         remove_api_keys_df = combined_df[ (combined_df['api_key_present'] == True) & ((combined_df['convertkit_trial_user'] == False) | (combined_df['canceled'] == True))]
-        logging.info(f'removing API keys for trial users')
+        logger.info(f'removing API keys for trial users')
         # print(remove_api_keys_df)
         for index, row in remove_api_keys_df.iterrows():
             email = row['email']
             api_key = row['api_key']
-            # logging.info(f'removing api key for user: {row}')
+            # logger.info(f'removing api key for user: {row}')
             redis_trial_user_key = self.redis_connection.build_key(redisdb.KEY_TYPE_TRIAL_USER, email)
             redis_api_key = self.redis_connection.build_key(redisdb.KEY_TYPE_API_KEY, api_key)
-            logging.info(f'need to delete redis keys: {redis_trial_user_key} and {redis_api_key}')
+            logger.info(f'need to delete redis keys: {redis_trial_user_key} and {redis_api_key}')
             self.redis_connection.remove_key(redis_trial_user_key, sleep=False)
             self.redis_connection.remove_key(redis_api_key, sleep=False)
 
         # identify airtable records which must be removed
         remove_airtable_records_df = combined_df[ (combined_df['airtable_record'] == True) & ((combined_df['convertkit_trial_user'] == False) | (combined_df['canceled'] == True))]
-        logging.info(f'removing airtable records for trial users')
+        logger.info(f'removing airtable records for trial users')
         # print(remove_airtable_records_df)
         record_ids = list(remove_airtable_records_df['record_id'])
         # remove duplicates
@@ -490,7 +490,7 @@ class UserUtils():
         # identify airtable records which must be added
         add_airtable_records_df = combined_df[ (combined_df['airtable_record'] == False) & (combined_df['convertkit_trial_user'] == True) & (combined_df['canceled'] == False)]
         if len(add_airtable_records_df) > 0:
-            logging.info(f'the following records must be created on airtable trials table:')
+            logger.info(f'the following records must be created on airtable trials table:')
             print(add_airtable_records_df)
             add_airtable_records_df = add_airtable_records_df[['email', 'subscription_date']]
             self.airtable_utils.add_trial_users(add_airtable_records_df)
@@ -530,7 +530,7 @@ class UserUtils():
         for index, row in convertkit_missed_joins_df.iterrows():
             email = row['email']
             code = row['code']
-            logging.error(f'could not locate getcheddar customer on convertkit email: {email} code: {code}')
+            logger.error(f'could not locate getcheddar customer on convertkit email: {email} code: {code}')
 
         combined_df = pandas.merge(combined_df, getcheddar_customer_data_df, how='left', on='code')
         if len(monthly_usage_data_df) > 0:
@@ -548,9 +548,9 @@ class UserUtils():
         return combined_df
 
     def update_usage_convertkit_trial_users(self, data_df):
-        logging.info('update_usage_convertkit_trial_users')
+        logger.info('update_usage_convertkit_trial_users')
         required_usage_update_df = data_df[data_df['trial_quota_usage'] != data_df['characters']]
-        logging.info('the following records require an update:')
+        logger.info('the following records require an update:')
 
         for index, row in required_usage_update_df.iterrows():
             # user_set_fields
@@ -582,7 +582,7 @@ class UserUtils():
                 tag_name = f'client_{client}'
                 if tag_name in self.convertkit_client.full_tag_id_map:
                     if tag_name not in tags:
-                        logging.info(f'tagging {email} with {tag_name}')
+                        logger.info(f'tagging {email} with {tag_name}')
                         tag_id = self.convertkit_client.full_tag_id_map[tag_name]
                         self.convertkit_client.tag_user(email, tag_id)
 
@@ -591,7 +591,7 @@ class UserUtils():
                 tag_name = f'service_{service}'
                 if tag_name in self.convertkit_client.full_tag_id_map:
                     if tag_name not in tags:
-                        logging.info(f'tagging {email} with {tag_name}')
+                        logger.info(f'tagging {email} with {tag_name}')
                         tag_id = self.convertkit_client.full_tag_id_map[tag_name]
                         self.convertkit_client.tag_user(email, tag_id)                        
 
@@ -600,13 +600,13 @@ class UserUtils():
                 tag_name = f'language_{audio_language}'
                 if tag_name in self.convertkit_client.full_tag_id_map:
                     if tag_name not in tags:
-                        logging.info(f'tagging {email} with {tag_name}')
+                        logger.info(f'tagging {email} with {tag_name}')
                         tag_id = self.convertkit_client.full_tag_id_map[tag_name]
                         self.convertkit_client.tag_user(email, tag_id)                
 
     def update_tags_convertkit_getcheddar_users(self, data_df):
         # perform necessary taggings on convertkit getcheddar users
-        logging.info('performing tag updates for getcheddar users')
+        logger.info('performing tag updates for getcheddar users')
         
         # make the logic a bit easier by removing nans
         data_df['tags'] = data_df['tags'].fillna("").apply(list)
@@ -625,7 +625,7 @@ class UserUtils():
             tags = row['tags']
             near_max = row['plan_percent_used'] > 0.75 # near maxed out
 
-            logging.info(f'processing convertkit getcheddar tags for {email} subscriber_id {subscriber_id} {status}')
+            logger.info(f'processing convertkit getcheddar tags for {email} subscriber_id {subscriber_id} {status}')
 
             if status == 'active':
                 # if tag getcheddar_active is not set, we have to set it
@@ -653,7 +653,7 @@ class UserUtils():
 
 
     def update_tags_convertkit_patreon_users(self, data_df):
-        logging.info('performing tag updates for patreon users')
+        logger.info('performing tag updates for patreon users')
         
         # make the logic a bit easier by removing nans
         data_df['tags'] = data_df['tags'].fillna("").apply(list)
@@ -672,7 +672,7 @@ class UserUtils():
             subscriber_id = row['subscriber_id']
             tags = row['tags']
 
-            logging.info(f'processing convertkit patreon tags for {email} subscriber_id {subscriber_id} {entitled}')
+            logger.info(f'processing convertkit patreon tags for {email} subscriber_id {subscriber_id} {entitled}')
 
             if entitled == True:
                 if tag_name_active not in tags:
@@ -697,20 +697,20 @@ class UserUtils():
             tag_request = row['tag_request']
 
             if tag_request == 'trial_extended':
-                logging.info(f'extending trial for {email}')
+                logger.info(f'extending trial for {email}')
                 # increase API key character limit
                 self.redis_connection.increase_trial_key_limit(email, quotas.TRIAL_EXTENDED_USER_CHARACTER_LIMIT)
                 # tag user on convertkit
                 self.convertkit_client.tag_user_trial_extended(email, quotas.TRIAL_EXTENDED_USER_CHARACTER_LIMIT)
             elif tag_request == 'trial_vip':
-                logging.info(f'enabling trial VIP for {email}')
+                logger.info(f'enabling trial VIP for {email}')
                 # increase API key character limit
                 self.redis_connection.increase_trial_key_limit(email, quotas.TRIAL_VIP_USER_CHARACTER_LIMIT)
                 # tag user on convertkit
                 self.convertkit_client.tag_user_trial_vip(email, quotas.TRIAL_VIP_USER_CHARACTER_LIMIT)
             else:
                 tag_id = self.convertkit_client.full_tag_id_map[tag_request]
-                logging.info(f'tagging {email} with {tag_request} / {tag_id}')
+                logger.info(f'tagging {email} with {tag_request} / {tag_id}')
                 self.convertkit_client.tag_user(email, tag_id)
             # blank out tag_request field
             airtable_update_records.append({
@@ -724,7 +724,7 @@ class UserUtils():
 
 
     def update_airtable_patreon(self, tag_data_df):
-        logging.info('updating airtable for patreon users')
+        logger.info('updating airtable for patreon users')
 
         user_data_df = self.build_user_data_patreon(tag_data_df)
 
@@ -744,11 +744,11 @@ class UserUtils():
         self.airtable_utils.update_patreon_users(update_df)
 
     def update_airtable_trial(self, tag_data_df):
-        logging.info('updating airtable for trial users')
+        logger.info('updating airtable for trial users')
         
-        logging.info('start getting trial API keys from redis')
+        logger.info('start getting trial API keys from redis')
         api_key_list = self.get_full_api_key_list()
-        logging.info('done getting trial API keys from redis')
+        logger.info('done getting trial API keys from redis')
 
         self.cleanup_user_data_trial(api_key_list)
 
@@ -771,7 +771,7 @@ class UserUtils():
         self.airtable_utils.update_trial_users(update_df)
 
     def update_airtable_getcheddar(self, tag_data_df):
-        logging.info('updating airtable for getcheddar users')
+        logger.info('updating airtable for getcheddar users')
 
         user_data_df = self.build_user_data_getcheddar(tag_data_df)
 
@@ -799,28 +799,28 @@ class UserUtils():
 
     def update_airtable_all(self):
         # get convertkit tag dataframe once at startup
-        logging.info('start retrieving all convertkit tag dataframes')
+        logger.info('start retrieving all convertkit tag dataframes')
         tag_data_df = self.get_convertkit_tag_data(self.convertkit_client.TAG_IGNORE_LIST_GLOBAL)
-        logging.info('finished retrieving all convertkit tag dataframes')
+        logger.info('finished retrieving all convertkit tag dataframes')
         self.update_airtable_getcheddar(tag_data_df)
         self.update_airtable_patreon(tag_data_df)
         self.update_airtable_trial(tag_data_df)
         self.update_airtable_usage()
     
     def extend_patreon_key_validity(self):
-        logging.info('extending patreon key validity')
+        logger.info('extending patreon key validity')
         self.patreon_utils.extend_user_key_validity()
 
     def extend_trial_expiration(self, api_key):
         expiration = self.redis_connection.get_api_key_expiration_timestamp_long()
         redis_api_key = self.redis_connection.build_key(redisdb.KEY_TYPE_API_KEY, api_key)
         self.redis_connection.r.hset(redis_api_key, 'expiration', expiration)
-        logging.info(f'{redis_api_key}: setting expiration to {expiration}')
+        logger.info(f'{redis_api_key}: setting expiration to {expiration}')
 
     def increase_trial_character_limit(self, api_key, character_limit):
         redis_api_key = self.redis_connection.build_key(redisdb.KEY_TYPE_API_KEY, api_key)
         self.redis_connection.r.hset(redis_api_key, 'character_limit', character_limit)
-        logging.info(f'{redis_api_key}: setting character_limit to {character_limit}')
+        logger.info(f'{redis_api_key}: setting character_limit to {character_limit}')
 
     def report_getcheddar_usage_all_users(self):
         api_key_list = self.redis_connection.list_getcheddar_api_keys()
@@ -829,13 +829,13 @@ class UserUtils():
 
     def report_getcheddar_user_usage(self, api_key):
         try:
-            logging.info(f'reporting getcheddar usage for api key {api_key}')
+            logger.info(f'reporting getcheddar usage for api key {api_key}')
             user_data = self.redis_connection.get_api_key_data(api_key)
 
             # retrieve getcheddar customer info
             customer_info = self.getcheddar_utils.get_customer(user_data['code'])
             if customer_info['status'] == 'canceled':
-                logging.info(f'not reporting usage for api_key {api_key}, getcheddar status is canceled')
+                logger.info(f'not reporting usage for api_key {api_key}, getcheddar status is canceled')
                 return
 
             # retrieve the accumulated usage
@@ -850,14 +850,14 @@ class UserUtils():
                 max_reportable_quantity = user_data['thousand_char_quota'] - user_data['thousand_char_used'] - 0.001
                 thousand_char_quantity = max(0.0, min(max_reportable_quantity, thousand_char_quantity))
 
-            logging.info(f'reporting usage for {api_key} ({user_data}): {thousand_char_quantity}')
+            logger.info(f'reporting usage for {api_key} ({user_data}): {thousand_char_quantity}')
             updated_user_data = self.getcheddar_utils.report_customer_usage(user_data['code'], thousand_char_quantity)
             # this will update the usage on the api_key_data
             self.redis_connection.get_update_getcheddar_user_key(updated_user_data)
             # reset the usage slice
             self.redis_connection.reset_getcheddar_usage_slice(api_key)
         except:
-            logging.exception(f'could not report getcheddar usage for {api_key}')
+            logger.exception(f'could not report getcheddar usage for {api_key}')
         
 
     def download_audio_requests(self):
@@ -871,7 +871,7 @@ class UserUtils():
         filename = 'temp_data_files/audio_requests.csv'
         audio_requests_df.to_csv(filename)
 
-        logging.info(f'wrote audio requests to {filename}')
+        logger.info(f'wrote audio requests to {filename}')
         return
 
         # print(audio_requests_df)
