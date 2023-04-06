@@ -208,7 +208,7 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         if response.status_code != 200:
-            logging.error(f'could not tag user: {response.content}')
+            logging.error(f'could not tag user email: [{email}]: response: {response.content}')
         else:
             logging.info(f'tagged user with tag_id {tag_id}: {email}')
 
@@ -235,7 +235,7 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)        
         if response.status_code != 200:
-            logging.error(f'could update user {email}, {subscriber_id} fields : {response.content}')            
+            logging.error(f'could not update user {email}, subscriber_id: {subscriber_id} response: {response.content}')
         else:
             logging.info(f'updated user {email}, {subscriber_id} fields: {field_map}')
 

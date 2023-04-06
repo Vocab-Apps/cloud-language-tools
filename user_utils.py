@@ -16,6 +16,7 @@ import redisdb
 import cloudlanguagetools.constants
 import cloudlanguagetools.languages
 
+logger = logging.getLogger(__name__)
 
 class UserUtils():
     def __init__(self):
@@ -555,9 +556,10 @@ class UserUtils():
             # user_set_fields
             email = row['email']
             subscriber_id = row['subscriber_id']
+            api_key = row['api_key']
             existing_trial_quota_usage = row['trial_quota_usage']
             fields = {'trial_quota_usage': row['characters']}
-            logging.info(f'updating convertkit trial usage from {existing_trial_quota_usage} to {fields}')
+            logger.info(f'email: [{email}] subscriber_id: [{subscriber_id}] api_key: [{api_key}] updating convertkit trial usage from {existing_trial_quota_usage} to {fields}')
             self.convertkit_client.user_set_fields(email, subscriber_id, fields)
 
 
