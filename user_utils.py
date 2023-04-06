@@ -218,7 +218,7 @@ class UserUtils():
         record_list = list(processed_records_dict.values())
         return pandas.DataFrame(record_list)
 
-    def build_user_data_patreon(self, readonly=False):
+    def build_user_data_patreon(self, tag_data_df, readonly=False):
         # api keys
         api_key_list = self.get_full_api_key_list()
 
@@ -234,7 +234,6 @@ class UserUtils():
 
         # get tag data from convertkit
         convertkit_users_df = self.get_convertkit_patreon_users()
-        tag_data_df = self.get_convertkit_tag_data(self.convertkit_client.TAG_IGNORE_LIST_PATREON)
         convertkit_data_df = pandas.merge(convertkit_users_df, tag_data_df, how='left', on='subscriber_id')
 
         # usage data
@@ -363,7 +362,7 @@ class UserUtils():
 
         return final_df
 
-    def build_user_data_trial(self, api_key_list, readonly=False):
+    def build_user_data_trial(self, api_key_list, tag_data_df, readonly=False):
         # api keys
         flat_api_key_list = [x['api_key'] for x in api_key_list]
 
@@ -377,10 +376,6 @@ class UserUtils():
         # get convertkit canceled users
         logging.info('getting convertkit canceled users')
         canceled_df = self.get_convertkit_canceled_users()
-
-        # get tag data from convertkit
-        logging.info('getting convertkit tag data')
-        tag_data_df = self.get_convertkit_tag_data(self.convertkit_client.TAG_IGNORE_LIST_TRIAL)
 
         # get user tracking data
         logging.info('getting user tracking data')
@@ -506,7 +501,7 @@ class UserUtils():
         customer_data_df = customer_data_df[['code', 'plan', 'plan_usage', 'status']]
         return customer_data_df
 
-    def build_user_data_getcheddar(self, readonly=False):
+    def build_user_data_getcheddar(self, tag_data_df, readonly=False):
         # api keys
         api_key_list = self.get_full_api_key_list()
         flat_api_key_list = [x['api_key'] for x in api_key_list]
@@ -521,7 +516,6 @@ class UserUtils():
 
         # get tag data from convertkit
         convertkit_users_df = self.get_convertkit_getcheddar_users()
-        tag_data_df = self.get_convertkit_tag_data(self.convertkit_client.TAG_IGNORE_LIST_GETCHEDDAR)
         convertkit_data_df = pandas.merge(convertkit_users_df, tag_data_df, how='left', on='subscriber_id')
 
         # usage data
@@ -727,10 +721,10 @@ class UserUtils():
             self.airtable_utils.update_trial_users(airtable_update_df)
 
 
-    def update_airtable_patreon(self):
+    def update_airtable_patreon(self, tag_data_df):
         logging.info('updating airtable for patreon users')
 
-        user_data_df = self.build_user_data_patreon()
+        user_data_df = self.build_user_data_patreon(tag_data_df)
 
         # get airtable patreon users table
         airtable_patreon_df = self.airtable_utils.get_patreon_users()
@@ -747,7 +741,7 @@ class UserUtils():
 
         self.airtable_utils.update_patreon_users(update_df)
 
-    def update_airtable_trial(self):
+    def update_airtable_trial(self, tag_data_df):
         logging.info('updating airtable for trial users')
         
         logging.info('start getting trial API keys from redis')
@@ -758,7 +752,7 @@ class UserUtils():
 
         self.perform_airtable_trial_tag_requests()
 
-        user_data_df = self.build_user_data_trial(api_key_list)
+        user_data_df = self.build_user_data_trial(api_key_list, tag_data_df)
 
         # get airtable trial users table
         airtable_trial_df = self.airtable_utils.get_trial_users()
@@ -774,10 +768,10 @@ class UserUtils():
 
         self.airtable_utils.update_trial_users(update_df)
 
-    def update_airtable_getcheddar(self):
+    def update_airtable_getcheddar(self, tag_data_df):
         logging.info('updating airtable for getcheddar users')
 
-        user_data_df = self.build_user_data_getcheddar()
+        user_data_df = self.build_user_data_getcheddar(tag_data_df)
 
         # get airtable trial users table
         airtable_getcheddar_df = self.airtable_utils.get_getcheddar_users()
@@ -802,9 +796,13 @@ class UserUtils():
         self.airtable_utils.update_usage_daily(usage_df)
 
     def update_airtable_all(self):
-        self.update_airtable_getcheddar()
-        self.update_airtable_patreon()
-        self.update_airtable_trial()
+        # get convertkit tag dataframe once at startup
+        logging.info('start retrieving all convertkit tag dataframes')
+        tag_data_df = self.get_convertkit_tag_data(self.convertkit_client.TAG_IGNORE_LIST_GLOBAL)
+        logging.info('finished retrieving all convertkit tag dataframes')
+        self.update_airtable_getcheddar(tag_data_df)
+        self.update_airtable_patreon(tag_data_df)
+        self.update_airtable_trial(tag_data_df)
         self.update_airtable_usage()
     
     def extend_patreon_key_validity(self):

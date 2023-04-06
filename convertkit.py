@@ -41,6 +41,8 @@ class ConvertKit():
     TAG_IGNORE_LIST_TRIAL = ['trial_api_key_requested', 'trial_api_key_ready', 'trial_user'] # we still want to see which trial users migrated to getcheddar/patreon
     TAG_IGNORE_LIST_PATREON = TRIAL_SPECIFIC_TAG_LIST + GETCHEDDAR_SPECIFIC_TAG_LIST
 
+    TAG_IGNORE_LIST_GLOBAL = []
+
     def __init__(self):
         self.enable = secrets.config['convertkit']['enable']
         if self.enable:
