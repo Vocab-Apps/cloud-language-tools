@@ -1,10 +1,12 @@
 import os
 import requests
 import pprint
+import convertkit
+import logging
+import clt_secrets as secrets
 
-api_key = os.environ['CONVERTKIT_API_KEY']
-api_secret = os.environ['CONVERTKIT_API_SECRET']
-
+api_key = secrets.config['convertkit']['CONVERTKIT_API_KEY']
+api_secret = secrets.config['convertkit']['CONVERTKIT_API_SECRET']
 
 def list_subscribers():
     # curl https://api.convertkit.com/v3/subscribers?api_secret=<your_secret_api_key>&from=2016-02-01&to=2015-02-28
@@ -159,9 +161,18 @@ def configure_addtag_webhook_patreonuser():
     data = response.json()
     pprint.pprint(data)    
 
+def verify_email():
+    client = convertkit.ConvertKit()
+    input_email = 'luc.wastiaux@xsmail.com'
+    email_valid, reason = client.check_email_valid(input_email)
+    print(f'{input_email}: email_valid: {email_valid}, reason: {reason}')
+
 
 if __name__ == '__main__':
-    configure_addtag_webhook()
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
+                        datefmt='%Y%m%d-%H:%M:%S',
+                        level=logging.DEBUG)
+    # configure_addtag_webhook()
     # configure_addtag_webhook_trialkey()
     # configure_addtag_webhook_patreonuser()
     # list_tags()
@@ -175,3 +186,4 @@ if __name__ == '__main__':
     # list_sequences()
     # add_subscriber_sequence()
     # list_forms()
+    verify_email()

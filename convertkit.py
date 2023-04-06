@@ -71,6 +71,10 @@ class ConvertKit():
             self.debounce_email = secrets.config['debounce']['email']
             self.debounce_api_key = secrets.config['debounce']['api_key']
 
+        self.enable_verify_email = secrets.config['verify_email']['enable']
+        if self.enable_verify_email:
+            self.verify_email_api_key = secrets.config['verify_email']['api_key']
+
         self.full_tag_id_map = {} 
 
     def email_valid(self, email):
@@ -98,21 +102,37 @@ class ConvertKit():
         if not self.enable_debounce:
             return True, None
         try:
+            # use debounce.io first
+            # =====================
+
             url = "https://api.debounce.io/v1/"
             querystring = {'api': self.debounce_api_key, 'email': email}
             response = requests.get(url, params=querystring)
             if response.status_code == 200:
                 data = response.json()
-                # logging.info(f'debounce.io result: {pprint.pformat(data)}')
+                logging.debug(f'debounce.io result: {pprint.pformat(data)}')
                 # print(data)
                 result = data['debounce']['result']
                 reason = data['debounce']['reason']
-                if result == 'Safe to Send':
-                    return True, None
-                else:
+                if result != 'Safe to Send':
                     return False, f'email not valid: {result}, {reason}'
             else:
-                logging.error(f'received error: {response.status_code}: {response.text}')
+                logging.error(f'debounce.io: received error: {response.status_code}: {response.text}')
+
+            # use verifyemail.io second
+            # =========================
+
+            if self.enable_verify_email:
+                url = f'https://verifymail.io/api/{email}?key={self.verify_email_api_key}'
+                response = requests.get(url)
+                if response.status_code == 200:
+                    data = response.json()
+                    logging.debug(f'verifyemail response: {pprint.pformat(data)}')
+                    if data['disposable'] == True:
+                        return False, f'email not valid: disposable address'
+            else:
+                logging.error(f'verifyemail.io: received error: {response.status_code}: {response.text}')                    
+                    
         except:
             logging.exception(f'could not perform debounce query to validate {email}')
         return True, None # true by default
