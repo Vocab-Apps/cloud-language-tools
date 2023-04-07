@@ -550,11 +550,15 @@ class UserUtils():
 
     def update_usage_convertkit_trial_users(self, data_df):
         logger.info('update_usage_convertkit_trial_users')
-        required_usage_update_df = data_df[data_df['trial_quota_usage'] != data_df['characters']]
-        required_usage_update_df = required_usage_update_df[required_usage_update_df['subscriber_id'].notnull()]
+
+        # we can't update those which don't have a subscriber ids, they probably got deleted from convertkit
+        valid_subscribers_df = data_df[data_df['subscriber_id'].notnull()]
+
+        required_usage_update_df = valid_subscribers_df[valid_subscribers_df['trial_quota_usage'] != valid_subscribers_df['characters']]
         required_usage_update_df['clients'] = required_usage_update_df['clients'].fillna("").apply(list)
         required_usage_update_df['audio_languages'] = required_usage_update_df['audio_language_enum'].fillna("").apply(list)
         required_usage_update_df['tags'] = required_usage_update_df['tags'].fillna("").apply(list)
+        
         logger.info('the following records require an update:')
 
         for index, row in required_usage_update_df.iterrows():
@@ -584,6 +588,12 @@ class UserUtils():
 
             logger.info(f'email: [{email}] subscriber_id: [{subscriber_id}] api_key: [{api_key}] updating convertkit trial usage from {existing_trial_quota_usage} to {fields}')
             self.convertkit_client.user_set_fields(email, subscriber_id, fields)
+
+        # identify subscribers who have used up their trial quota
+        trial_max_out_df = valid_subscribers_df[valid_subscribers_df['characters'] + 200 > valid_subscribers_df['character_limit']]
+        for index, row in trial_max_out_df.iterrows():
+            # user_set_fields
+            email = row['email']
 
             # did the user use up their whole trial credit ?
             if row['characters'] > row['character_limit'] * 0.97:
