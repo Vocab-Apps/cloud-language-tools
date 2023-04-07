@@ -594,16 +594,15 @@ class UserUtils():
         for index, row in trial_max_out_df.iterrows():
             # user_set_fields
             email = row['email']
+            tags = row['tags']
 
-            # did the user use up their whole trial credit ?
-            if row['characters'] > row['character_limit'] * 0.97:
-                # used up trial quota
-                tag_name = 'trial_maxed_out'
-                if tag_name in self.convertkit_client.full_tag_id_map:
-                    if tag_name not in tags:
-                        logger.info(f'tagging {email} with {tag_name}')
-                        tag_id = self.convertkit_client.full_tag_id_map[tag_name]
-                        self.convertkit_client.tag_user(email, tag_id)                
+            # used up trial quota
+            tag_name = 'trial_maxed_out'
+            if tag_name in self.convertkit_client.full_tag_id_map:
+                if tag_name not in tags:
+                    logger.info(f'tagging {email} with {tag_name}')
+                    tag_id = self.convertkit_client.full_tag_id_map[tag_name]
+                    self.convertkit_client.tag_user(email, tag_id)                
 
 
 
