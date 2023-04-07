@@ -602,6 +602,8 @@ class RedisDb():
             
             if usage_slice.over_quota(current_quota_characters + characters, current_quota_requests + 1):
                 error_msg = f'Exceeded {usage_slice.usage_scope.name} {usage_slice.usage_period.name} quota)'
+                if usage_slice.usage_scope == cloudlanguagetools.constants.UsageScope.User and usage_slice.usage_period == cloudlanguagetools.constants.UsagePeriod.lifetime:
+                    error_msg = f'Maxed out trial quota. Please sign up for the paid plan.'
                 raise cloudlanguagetools.errors.OverQuotaError(error_msg)        
 
         # track usage
