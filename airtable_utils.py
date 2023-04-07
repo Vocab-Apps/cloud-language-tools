@@ -120,7 +120,7 @@ class AirtableUtils():
             del update_instructions[0:slice_length]
             
             # pprint.pprint(update_slice)
-            logging.info(f'updating records')
+            logging.info(f'updating records, remaining records: {len(update_instructions)}')
             response = requests.patch(base_url, json={
                 'records': update_slice,
                 'typecast': True
