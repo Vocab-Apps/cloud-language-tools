@@ -4,6 +4,7 @@ import datetime
 import argparse
 import json
 import pprint
+import re
 
 import clt_secrets as secrets
 import quotas
@@ -550,6 +551,9 @@ class UserUtils():
     def update_usage_convertkit_trial_users(self, data_df):
         logger.info('update_usage_convertkit_trial_users')
         required_usage_update_df = data_df[data_df['trial_quota_usage'] != data_df['characters']]
+        required_usage_update_df['clients'] = required_usage_update_df['clients'].fillna("").apply(list)
+        required_usage_update_df['audio_languages'] = required_usage_update_df['audio_language_enum'].fillna("").apply(list)
+        required_usage_update_df['tags'] = required_usage_update_df['tags'].fillna("").apply(list)
         logger.info('the following records require an update:')
 
         for index, row in required_usage_update_df.iterrows():
@@ -559,8 +563,37 @@ class UserUtils():
             api_key = row['api_key']
             existing_trial_quota_usage = row['trial_quota_usage']
             fields = {'trial_quota_usage': row['characters']}
+
+            # can we update client name ?
+            tags = row['tags']
+            clients = row['clients']
+            if 'hypertts' in clients:
+                fields['client_name'] = 'HyperTTS Pro'
+                fields['sale_purchase_url'] = 'https://languagetools.anki.study/hypertts-pro'
+            elif 'awesometts' in clients:
+                fields['client_name'] = 'AwesomeTTS Plus'
+                fields['sale_purchase_url'] = 'https://languagetools.anki.study/awesometts-plus'
+            
+            # update languages
+            languages = row['audio_languages']
+            if len(languages) > 0:
+                language_name_list = [re.sub('([^\s]+)\s*.*', '\\1', cloudlanguagetools.languages.Language[language].lang_name) for language in languages]
+                language_name = ', '.join(language_name_list)
+                fields['language_name'] = language_name
+
             logger.info(f'email: [{email}] subscriber_id: [{subscriber_id}] api_key: [{api_key}] updating convertkit trial usage from {existing_trial_quota_usage} to {fields}')
             self.convertkit_client.user_set_fields(email, subscriber_id, fields)
+
+            # did the user use up their whole trial credit ?
+            if row['characters'] > row['character_limit'] * 0.97:
+                # used up trial quota
+                tag_name = 'trial_maxed_out'
+                if tag_name in self.convertkit_client.full_tag_id_map:
+                    if tag_name not in tags:
+                        logger.info(f'tagging {email} with {tag_name}')
+                        tag_id = self.convertkit_client.full_tag_id_map[tag_name]
+                        self.convertkit_client.tag_user(email, tag_id)                
+
 
 
     def update_tags_convertkit_users(self, data_df):
