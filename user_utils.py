@@ -551,6 +551,7 @@ class UserUtils():
     def update_usage_convertkit_trial_users(self, data_df):
         logger.info('update_usage_convertkit_trial_users')
         required_usage_update_df = data_df[data_df['trial_quota_usage'] != data_df['characters']]
+        required_usage_update_df = required_usage_update_df[required_usage_update_df['subscriber_id'].notnull()]
         required_usage_update_df['clients'] = required_usage_update_df['clients'].fillna("").apply(list)
         required_usage_update_df['audio_languages'] = required_usage_update_df['audio_language_enum'].fillna("").apply(list)
         required_usage_update_df['tags'] = required_usage_update_df['tags'].fillna("").apply(list)
