@@ -6,6 +6,8 @@ import urllib
 import pprint
 import clt_secrets as secrets
 
+logger = logging.getName(__name__)
+
 class AirtableUtils():
     def __init__(self):
         self.enable = secrets.config['airtable']['enable']
@@ -22,12 +24,9 @@ class AirtableUtils():
 
     def get_trial_tag_requests(self):
         url = f'{self.airtable_trial_users_url}?view=tag%20requests'
-        response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'})
-        data = response.json()
-        airtable_records = []
-        for record in data['records']:
-            airtable_records.append({'id': record['id'], 'email': record['fields']['email'], 'tag_request': record['fields']['tag_request']})
-        airtable_records_df = pandas.DataFrame(airtable_records)
+        logger.info(f'retrieving trial tag requests, url: {url}')
+        airtable_records_df = self.get_airtable_records(url)
+        logger.info(f'retrieved {len(airtable_records_df)} trial user tag request records')
         return airtable_records_df
 
     def get_patreon_users(self):

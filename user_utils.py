@@ -734,6 +734,7 @@ class UserUtils():
 
     def perform_airtable_trial_tag_requests(self):
         airtable_records_df = self.airtable_utils.get_trial_tag_requests()
+        logger.info(f'processing {len(airtable_records_df)} tag requests')
 
         airtable_update_records = []
 
@@ -742,22 +743,14 @@ class UserUtils():
             email = row['email']
             tag_request = row['tag_request']
 
-            if tag_request == 'trial_extended':
-                logger.info(f'extending trial for {email}')
-                # increase API key character limit
-                self.redis_connection.increase_trial_key_limit(email, quotas.TRIAL_EXTENDED_USER_CHARACTER_LIMIT)
-                # tag user on convertkit
-                self.convertkit_client.tag_user_trial_extended(email, quotas.TRIAL_EXTENDED_USER_CHARACTER_LIMIT)
-            elif tag_request == 'trial_vip':
-                logger.info(f'enabling trial VIP for {email}')
-                # increase API key character limit
-                self.redis_connection.increase_trial_key_limit(email, quotas.TRIAL_VIP_USER_CHARACTER_LIMIT)
-                # tag user on convertkit
-                self.convertkit_client.tag_user_trial_vip(email, quotas.TRIAL_VIP_USER_CHARACTER_LIMIT)
-            else:
+            # all tag requests processed the same way now
+            if tag_request in self.convertkit_client.full_tag_id_map:
                 tag_id = self.convertkit_client.full_tag_id_map[tag_request]
                 logger.info(f'tagging {email} with {tag_request} / {tag_id}')
                 self.convertkit_client.tag_user(email, tag_id)
+            else:
+                logger.error(f'could not tag {email} with {tag_request}: unknown tag')
+
             # blank out tag_request field
             airtable_update_records.append({
                 'record_id': record_id,
