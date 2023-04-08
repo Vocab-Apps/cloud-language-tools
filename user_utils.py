@@ -804,6 +804,7 @@ class UserUtils():
         update_df = joined_df[['record_id', 'api_key', 'api_key_valid', 'api_key_expiration', 
             'characters', 'character_limit', 'monthly_cost', 'monthly_chars', 'prev_monthly_cost', 
             'prev_monthly_chars', 'detected_languages', 'services', 'clients', 'versions', 'tags', 'subscriber_id']]
+        update_df['subscriber_id'] = update_df['subscriber_id'].astype(int)
 
         # print(update_df)
         logger.info(f'updating airtable trial users table with columns: {update_df.dtypes}')
