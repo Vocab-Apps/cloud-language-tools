@@ -95,7 +95,7 @@ def setup_tasks():
         logging.info('setting up user_data tasks')
         report_getcheddar_usage()
         update_airtable()
-        schedule.every(1).hours.do(update_airtable)
+        schedule.every(30).minutes.do(update_airtable)
         schedule.every(6).hours.do(report_getcheddar_usage)
     if secrets.config['scheduled_tasks']['language_data']:
         logging.info('setting up language_data')
