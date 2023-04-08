@@ -8,6 +8,8 @@ import clt_secrets as secrets
 
 logger = logging.getLogger(__name__)
 
+# API docs here: https://airtable.com/developers/web/api/introduction
+
 class AirtableUtils():
     def __init__(self):
         self.enable = secrets.config['airtable']['enable']
@@ -23,15 +25,12 @@ class AirtableUtils():
         return self.get_airtable_records(self.airtable_trial_users_url)
 
     def get_trial_tag_requests(self):
-        url = f'{self.airtable_trial_users_url}?view=tag%20requests'
+        url = self.airtable_trial_users_url
+        view = 'tag requests'
         logger.info(f'retrieving trial tag requests, url: {url}')
-        response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'})
-        data = response.json()
-        airtable_records = []
-        for record in data['records']:
-            airtable_records.append({'id': record['id'], 'email': record['fields']['email'], 'tag_request': record['fields']['tag_request']})
-        airtable_records_df = pandas.DataFrame(airtable_records)
-        return airtable_records_df
+        tag_request_df = self.get_airtable_records(url, view=view)
+        logger.info(f'retrieved {len(tag_request_df)} tag requests')
+        return tag_request_df
 
     def get_patreon_users(self):
         return self.get_airtable_records(self.airtable_patreon_users_url)
@@ -39,18 +38,23 @@ class AirtableUtils():
     def get_getcheddar_users(self):
         return self.get_airtable_records(self.airtable_getcheddar_users_url)
 
-    def get_airtable_records(self, base_url):
+    def get_airtable_records(self, base_url, view=None):
         # first, list records
         data_available = True
         airtable_records = []
         offset = None
         while data_available:
             url = base_url
+            params = {}
             if offset != None:
-                url += '?offset=' + offset
-            logging.info(f'querying airtable url {url}')
-            response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'})
+                params['offset'] = offset
+            if view != None:
+                params['view'] = view
+            logging.info(f'querying airtable url {url}, params: {params}')
+            response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'}, params=params)
+            response.raise_for_status()
             data = response.json()
+            # logger.debug(f'get_airtable_records response: {data}')
             if 'offset' in data:
                 offset = data['offset']
             else:

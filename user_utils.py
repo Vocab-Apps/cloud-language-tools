@@ -739,7 +739,7 @@ class UserUtils():
         airtable_update_records = []
 
         for index, row in airtable_records_df.iterrows():
-            record_id = row['id']
+            record_id = row['record_id']
             email = row['email']
             tag_request = row['tag_request']
 
