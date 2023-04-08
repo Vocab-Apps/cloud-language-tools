@@ -6,7 +6,7 @@ import urllib
 import pprint
 import clt_secrets as secrets
 
-logger = logging.getName(__name__)
+logger = logging.getLogger(__name__)
 
 class AirtableUtils():
     def __init__(self):
