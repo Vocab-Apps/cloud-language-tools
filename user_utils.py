@@ -806,6 +806,7 @@ class UserUtils():
             'prev_monthly_chars', 'detected_languages', 'services', 'clients', 'versions', 'tags', 'subscriber_id']]
 
         # print(update_df)
+        logger.info(f'updating airtable trial users table with columns: {update_df.dtypes}')
 
         self.airtable_utils.update_trial_users(update_df)
 
