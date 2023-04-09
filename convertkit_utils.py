@@ -130,7 +130,7 @@ def configure_addtag_webhook():
         # 'target_url': 'https://cloud-language-tools-prod.anki.study/convertkit_subscriber_request_patreon_key',
         'target_url': 'https://cloud-language-tools-tts-prod.anki.study/convertkit_trial_quota_increase',
         # 'event': {  'name': 'subscriber.tag_add', 'tag_id': int(os.environ['CONVERTKIT_TRIAL_API_KEY_REQUESTED_TAG']) }
-        'event': {  'name': 'subscriber.tag_add', 'tag_id': 2929006 }
+        'event': {  'name': 'subscriber.tag_add', 'tag_id': 3772416 }
     })
     print(response)
     print(response.content)
@@ -172,7 +172,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
                         datefmt='%Y%m%d-%H:%M:%S',
                         level=logging.DEBUG)
-    # configure_addtag_webhook()
+    configure_addtag_webhook()
     # configure_addtag_webhook_trialkey()
     # configure_addtag_webhook_patreonuser()
     # list_tags()
@@ -186,4 +186,4 @@ if __name__ == '__main__':
     # list_sequences()
     # add_subscriber_sequence()
     # list_forms()
-    verify_email()
+    # verify_email()
