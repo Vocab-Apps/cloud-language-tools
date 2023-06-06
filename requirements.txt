@@ -1,4 +1,4 @@
-cloudlanguagetools>=5.0
+cloudlanguagetools>=5.6
 flask
 flask_restful
 gunicorn
