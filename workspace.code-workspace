@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
+		"python.defaultInterpreterPath": "/home/luc/python-env/cloud-language-tools/bin/python",
 		"editor.minimap.enabled": false
 	}
 }

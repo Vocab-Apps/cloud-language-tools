@@ -16,6 +16,7 @@ GETCHEDDAR_CHAR_MULTIPLIER = 1000.0
 
 AZURE_CJK_CHAR_MULTIPLIER = 2
 NAVER_AUDIO_CHAR_MULTIPLIER = 6
+ELEVENLABS_AUDIO_CHAR_MULTIPLIER = 18
 
 BREAKDOWN_CHAR_MULTIPLIER = 3
 
@@ -112,6 +113,10 @@ def adjust_character_count(
     if service == cloudlanguagetools.constants.Service.Naver:
         if request_type == cloudlanguagetools.constants.RequestType.audio:
             return characters * NAVER_AUDIO_CHAR_MULTIPLIER
+
+    if service == cloudlanguagetools.constants.Service.ElevenLabs:
+        if request_type == cloudlanguagetools.constants.RequestType.audio:
+            return characters * ELEVENLABS_AUDIO_CHAR_MULTIPLIER
 
     return characters
 
