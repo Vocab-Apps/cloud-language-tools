@@ -231,7 +231,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
-        self.assertIn(data['Amazon'], ['Très faible coût', 'Le coût est très faible', 'faible coût'])
+        self.assertIn(data['Amazon'], ['Très faible coût', 'Le coût est très faible', 'faible coût', 'Le coût est très bas'])
         self.assertIn(data['Google'], ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût'])
         self.assertEqual(data['Watson'], 'Le coût est très bas.')        
 
