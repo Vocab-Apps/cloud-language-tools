@@ -1255,7 +1255,9 @@ class ApiTests(unittest.TestCase):
         response_data = json.loads(response.data)        
         self.assertEqual(response_data['error'], f'must supply email address')
 
-
+    def test_health_check(self):
+        response = self.client.get('/_health')
+        self.assertEqual(response.status_code, 200)
 
 
 

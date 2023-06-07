@@ -511,8 +511,10 @@ class GetCheddar(flask_restful.Resource):
             cancel_url = webhook_data['cancel_url']
             convertkit_client.register_getcheddar_user(email, api_key, update_url, cancel_url)
 
-
-
+class Health(flask_restful.Resource):
+    def get(self):
+        redis_connection.verify_connection()
+        return {'status': 'OK'}, 200
 
 api.add_resource(LanguageList, '/language_list')
 api.add_resource(VoiceList, '/voice_list')
@@ -542,6 +544,9 @@ api.add_resource(ConvertKitTrialQuotaIncrease, '/convertkit_trial_quota_increase
 
 # getcheddar webooks
 api.add_resource(GetCheddar, '/getcheddar')
+
+# other
+api.add_resource(Health, '/_health')
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')

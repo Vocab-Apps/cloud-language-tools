@@ -31,6 +31,9 @@ class RedisDb():
     def __init__(self):
         self.connect()
 
+    def verify_connection(self):
+        self.r.ping()
+
     def connect(self, db_num=0):
         redis_url = secrets.config['redis_url']
         logging.info(f'connecting to redis url: {redis_url}, db_num: {db_num}')
