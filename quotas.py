@@ -47,6 +47,11 @@ COST_TABLE = [
         'request_type': 'audio',
         'character_cost': ((1.0/1000) * 0.090) / NAVER_AUDIO_CHAR_MULTIPLIER
     },
+    {
+        'service': cloudlanguagetools.constants.Service.ElevenLabs.name,
+        'request_type': cloudlanguagetools.constants.RequestType.audio.name,
+        'character_cost': ((1.0/1000) * 0.30) / ELEVENLABS_AUDIO_CHAR_MULTIPLIER
+    },    
     # translation
     {
         'service': 'Azure',
