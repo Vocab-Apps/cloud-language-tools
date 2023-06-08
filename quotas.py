@@ -52,6 +52,16 @@ COST_TABLE = [
         'request_type': cloudlanguagetools.constants.RequestType.audio.name,
         'character_cost': ((1.0/1000) * 0.30) / ELEVENLABS_AUDIO_CHAR_MULTIPLIER
     },    
+    {
+        'service': cloudlanguagetools.constants.Service.CereProc.name,
+        'request_type': cloudlanguagetools.constants.RequestType.audio.name,
+        'character_cost': ((1.0/1000000) * 16.31)
+    },
+    {
+        'service': cloudlanguagetools.constants.Service.FptAi.name,
+        'request_type': cloudlanguagetools.constants.RequestType.audio.name,
+        'character_cost': ((1.0/1500000) * 21.28)
+    },        
     # translation
     {
         'service': 'Azure',
