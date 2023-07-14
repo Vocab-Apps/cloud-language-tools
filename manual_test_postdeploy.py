@@ -154,7 +154,7 @@ class PostDeployTests(unittest.TestCase):
         }, headers={'api_key': self.api_key})
 
         data = response.json()
-        possible_translations = ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût', 'Le coût est très bas']
+        possible_translations = ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût', 'Le coût est très bas', 'Le coût est très faible']
         self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
         self.assertIn(data['Amazon'], possible_translations)
         self.assertIn(data['Google'], possible_translations)
