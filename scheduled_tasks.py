@@ -9,8 +9,10 @@ import redisdb
 import user_utils
 import clt_secrets as secrets
 import sentry_sdk
+import sentry_sdk.crons
 import cloudlanguagetools.servicemanager
 
+@sentry_sdk.crons.monitor(monitor_slug='backup_redis_db')
 def backup_redis_db():
     try:
         logging.info('START TASK backing up redis db')
@@ -53,6 +55,7 @@ def backup_redis_db():
         logging.exception(f'could not backup redis db')
 
 
+@sentry_sdk.crons.monitor(monitor_slug='update_airtable')
 def update_airtable():
     try:
         logging.info('START TASK updating airtable')
@@ -64,6 +67,7 @@ def update_airtable():
     except:
         logging.exception(f'could not update airtable')    
 
+@sentry_sdk.crons.monitor(monitor_slug='report_getcheddar_usage')
 def report_getcheddar_usage():
     try:
         logging.info('START TASK reporting getcheddar usage')
@@ -73,6 +77,7 @@ def report_getcheddar_usage():
     except:
         logging.exception(f'could not report getcheddar usage')
 
+@sentry_sdk.crons.monitor(monitor_slug='update_language_data')
 def update_language_data():
     try:    
         logging.info('START TASK updating language data')
