@@ -8,6 +8,7 @@ import pprint
 import datetime
 import clt_secrets as secrets
 import time
+import cloudlanguagetools.constants
 
 TRACKED_ITEM_CODE='thousand_chars'
 
@@ -123,7 +124,7 @@ class GetCheddarUtils():
         url = f'https://getcheddar.com/xml/customers/add-item-quantity/productCode/{self.product_code}/code/{customer_code_encoded}/itemCode/{TRACKED_ITEM_CODE}'
         # print(url)
         params = {'quantity': thousand_char_quantity}
-        response = requests.post(url, auth=(self.user, self.api_key), data=params)
+        response = requests.post(url, auth=(self.user, self.api_key), data=params, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             return self.decode_customer_xml(response.content)
@@ -136,7 +137,7 @@ class GetCheddarUtils():
         url = f'https://getcheddar.com/xml/customers/set-item-quantity/productCode/{self.product_code}/code/{customer_code_encoded}/itemCode/{TRACKED_ITEM_CODE}'
         # print(url)
         params = {'quantity': 0}
-        response = requests.post(url, auth=(self.user, self.api_key), data=params)
+        response = requests.post(url, auth=(self.user, self.api_key), data=params, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             return self.decode_customer_xml(response.content)
@@ -149,7 +150,7 @@ class GetCheddarUtils():
         customer_code_encoded = urllib.parse.quote(customer_code)
         url = f'https://getcheddar.com/xml/customers/get/productCode/{self.product_code}/code/{customer_code_encoded}'
         # print(url)
-        response = requests.get(url, auth=(self.user, self.api_key))
+        response = requests.get(url, auth=(self.user, self.api_key), timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             # self.print_xml_response(response.content)
@@ -165,7 +166,7 @@ class GetCheddarUtils():
         # print(url)
         logging.info(f'retrieving all getcheddar customer data')
         result = []
-        response = requests.get(url, auth=(self.user, self.api_key))
+        response = requests.get(url, auth=(self.user, self.api_key), timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             # self.print_xml_response(response.content)
@@ -208,7 +209,7 @@ class GetCheddarUtils():
             'subscription[ccCardCode]': '1234',
             'subscription[ccExpiration]': '04/2025'
         }
-        response = requests.post(url, auth=(self.user, self.api_key), data=params)
+        response = requests.post(url, auth=(self.user, self.api_key), data=params, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             # self.print_xml_response(response.content)
@@ -233,7 +234,7 @@ class GetCheddarUtils():
             'subscription[ccCardCode]': '1234',
             'subscription[ccExpiration]': '04/2025'
         }
-        response = requests.post(url, auth=(self.user, self.api_key), data=params)
+        response = requests.post(url, auth=(self.user, self.api_key), data=params, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             print(self.decode_customer_xml(response.content))
             logging.info(f'created customer {code}')
@@ -248,7 +249,7 @@ class GetCheddarUtils():
         params = {
             'planCode': plan
         }
-        response = requests.post(url, auth=(self.user, self.api_key), data=params)
+        response = requests.post(url, auth=(self.user, self.api_key), data=params, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             # self.print_xml_response(response.content)
@@ -261,7 +262,7 @@ class GetCheddarUtils():
 
         customer_code_encoded = urllib.parse.quote(code)
         url = f'https://getcheddar.com/xml/customers/cancel/productCode/{self.product_code}/code/{customer_code_encoded}'
-        response = requests.post(url, auth=(self.user, self.api_key))
+        response = requests.post(url, auth=(self.user, self.api_key), timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             # self.print_xml_response(response.content)
@@ -276,7 +277,7 @@ class GetCheddarUtils():
         # /customers/delete/productCode/MY_self.product_code/code/MY_CUSTOMER_CODE
         customer_code_encoded = urllib.parse.quote(code)
         url = f'https://getcheddar.com/xml/customers/delete/productCode/{self.product_code}/code/{customer_code_encoded}'
-        response = requests.post(url, auth=(self.user, self.api_key))
+        response = requests.post(url, auth=(self.user, self.api_key), timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             logging.info(f'customer {code} deleted')
@@ -291,7 +292,7 @@ class GetCheddarUtils():
         # /customers/delete-all/confirm/[current unix timestamp]/productCode/MY_PRODUCT_CODE
         timestamp = int(datetime.datetime.now().timestamp())
         url = f'https://getcheddar.com/xml/customers/delete-all/confirm/{timestamp}/productCode/{self.product_code}'
-        response = requests.post(url, auth=(self.user, self.api_key))
+        response = requests.post(url, auth=(self.user, self.api_key), timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code == 200:
             # success
             logging.info('all test customers deleted')

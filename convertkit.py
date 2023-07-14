@@ -86,7 +86,7 @@ class ConvertKit():
         try:
             url = "https://api.debounce.io/v1/"
             querystring = {'api': self.debounce_api_key, 'email': email}
-            response = requests.get(url, params=querystring)
+            response = requests.get(url, params=querystring, timeout=cloudlanguagetools.constants.RequestTimeout)
             if response.status_code == 200:
                 data = response.json()
                 # logger.info(f'debounce.io result: {pprint.pformat(data)}')
@@ -110,7 +110,7 @@ class ConvertKit():
 
             url = "https://api.debounce.io/v1/"
             querystring = {'api': self.debounce_api_key, 'email': email}
-            response = requests.get(url, params=querystring)
+            response = requests.get(url, params=querystring, timeout=cloudlanguagetools.constants.RequestTimeout)
             if response.status_code == 200:
                 data = response.json()
                 logger.debug(f'debounce.io result: {pprint.pformat(data)}')
@@ -127,7 +127,7 @@ class ConvertKit():
 
             if self.enable_verify_email:
                 url = f'https://verifymail.io/api/{email}?key={self.verify_email_api_key}'
-                response = requests.get(url)
+                response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
                 if response.status_code == 200:
                     data = response.json()
                     logger.debug(f'verifyemail response: {pprint.pformat(data)}')
@@ -271,7 +271,7 @@ class ConvertKit():
         subscriber_list = []
 
         url = f'https://api.convertkit.com/v3/tags/{tag_id}/subscriptions?api_secret={self.api_secret}&page=1'
-        response = requests.get(url)
+        response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code != 200:
             raise Exception(f'could not request subscribers for tag_id {tag_id}: status_code {response.status_code}: {response.content}')
         # throttle
@@ -288,7 +288,7 @@ class ConvertKit():
         while current_page < total_pages:
             next_page = current_page + 1
             url = f'https://api.convertkit.com/v3/tags/{tag_id}/subscriptions?api_secret={self.api_secret}&page={next_page}'
-            response = requests.get(url)
+            response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
             if response.status_code != 200:
                 raise Exception(f'could not request subscribers for tag_id {tag_id}: status_code {response.status_code}: {response.content}')
             # throttle
@@ -306,7 +306,7 @@ class ConvertKit():
         canceled_list = []
 
         url = f'https://api.convertkit.com/v3/subscribers?api_secret={self.api_secret}&sort_field=cancelled_at'
-        response = requests.get(url)
+        response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
         data = response.json()
 
         current_page = data['page']
@@ -317,7 +317,7 @@ class ConvertKit():
         while current_page < total_pages:
             next_page = current_page + 1
             url = f'https://api.convertkit.com/v3/subscribers?api_secret={self.api_secret}&sort_field=cancelled_at&page={next_page}'
-            response = requests.get(url)
+            response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
             # throttle
             time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
             data = response.json()
@@ -337,7 +337,7 @@ class ConvertKit():
 
     def list_tags(self, subscriber_id):
         url = f'https://api.convertkit.com/v3/subscribers/{subscriber_id}/tags?api_secret={self.api_secret}'
-        response = requests.get(url)
+        response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
         if response.status_code != 200:
             raise Exception(f'could not list tags, status_code: {response.status_code}: {response.content}')
         # throttle
@@ -348,7 +348,7 @@ class ConvertKit():
     def populate_tag_map(self):
         logger.info('populating tag map')
         url = f'https://api.convertkit.com/v3/tags?api_key={self.api_key}'
-        response = requests.get(url)
+        response = requests.get(url, timeout=cloudlanguagetools.constants.RequestTimeout)
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         assert response.status_code == 200
