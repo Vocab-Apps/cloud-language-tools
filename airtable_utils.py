@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 # API docs here: https://airtable.com/developers/web/api/introduction
 
+REQUEST_TIMEOUT=60
+
 class AirtableUtils():
     def __init__(self):
         self.enable = secrets.config['airtable']['enable']
@@ -52,7 +54,7 @@ class AirtableUtils():
             if view != None:
                 params['view'] = view
             logging.info(f'querying airtable url {url}, params: {params}')
-            response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'}, params=params, timeout=cloudlanguagetools.constants.RequestTimeout)
+            response = requests.get(url, headers={'Authorization': f'Bearer {self.airtable_api_key}'}, params=params, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             data = response.json()
             # logger.debug(f'get_airtable_records response: {data}')
@@ -151,7 +153,7 @@ class AirtableUtils():
             params_encoded = urllib.parse.urlencode(params, True)
             url = base_url + '?' + params_encoded
             logging.info(f'delete URL: {url}')
-            response = requests.delete(url, headers=headers, timeout=cloudlanguagetools.constants.RequestTimeout)
+            response = requests.delete(url, headers=headers, timeout=REQUEST_TIMEOUT)
             if response.status_code != 200:
                 logging.error(response.content)
 
@@ -172,7 +174,7 @@ class AirtableUtils():
             params_encoded = urllib.parse.urlencode(params, True)
             url = base_url + '?' + params_encoded
             logging.info(f'delete URL: {url}')
-            response = requests.delete(url, headers=headers, timeout=cloudlanguagetools.constants.RequestTimeout)
+            response = requests.delete(url, headers=headers, timeout=REQUEST_TIMEOUT)
             if response.status_code != 200:
                 logging.error(response.content)
         
