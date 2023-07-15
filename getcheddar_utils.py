@@ -11,7 +11,7 @@ import time
 import cloudlanguagetools.constants
 
 TRACKED_ITEM_CODE='thousand_chars'
-REQUEST_TIMEOUT=60
+REQUEST_TIMEOUT=300
 
 class GetCheddarUtils():
     def __init__(self):

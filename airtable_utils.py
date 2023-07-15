@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # API docs here: https://airtable.com/developers/web/api/introduction
 
-REQUEST_TIMEOUT=60
+REQUEST_TIMEOUT=300
 
 class AirtableUtils():
     def __init__(self):

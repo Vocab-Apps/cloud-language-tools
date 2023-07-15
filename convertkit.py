@@ -9,7 +9,7 @@ import cloudlanguagetools.constants
 logger = logging.getLogger(__name__)
 
 CONVERTKIT_THROTTLE_REQUESTS_SLEEP = 0.5
-REQUEST_TIMEOUT=60
+REQUEST_TIMEOUT=300
 
 class ConvertKit():
     # ignore these tags when building user tag maps to update airtable
