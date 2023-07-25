@@ -794,6 +794,13 @@ class UserUtils():
         self.perform_airtable_trial_tag_requests()
 
         user_data_df = self.build_user_data_trial(api_key_list, tag_data_df)
+        
+        # find duplicate emails in user_data_df
+        duplicate_emails_df = user_data_df[user_data_df.duplicated(['email'], keep=False)]
+        if len(duplicate_emails_df) > 0:
+            logger.error(f"found duplicate emails in user_data_df: {duplicate_emails_df[['email', 'api_key', 'api_key_expiration', 'subscriber_id']]}")
+        # remove duplicate emails
+        user_data_df = user_data_df.drop_duplicates(subset=['email'], keep='first')
 
         # get airtable trial users table
         airtable_trial_df = self.airtable_utils.get_trial_users()
