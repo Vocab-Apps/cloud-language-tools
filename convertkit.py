@@ -359,3 +359,16 @@ class ConvertKit():
             tag_name = tag_entry['name']
             tag_id = tag_entry['id']
             self.full_tag_id_map[tag_name] = tag_id
+
+    def configure_addtag_webhook(self, tag_name, target_url):
+        logger.info(f'adding convertkit webhook on tag {tag_name} to {target_url}')
+        tag_id = self.full_tag_id_map[tag_name]
+        url = 'https://api.convertkit.com/v3/automations/hooks'
+        response = requests.post(url, json={
+            'api_secret': self.api_secret,
+            'target_url': target_url,
+            'event': {  'name': 'subscriber.tag_add', 'tag_id': tag_id }
+        })
+        response.raise_for_status()
+        data = response.json()
+        logger.info(pprint.pformat(data))
