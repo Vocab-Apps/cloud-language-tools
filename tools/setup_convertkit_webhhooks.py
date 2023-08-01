@@ -19,6 +19,8 @@ def add_webhooks():
 
     url_base = 'https://cloudlanguagetools-api.vocab.ai'
     convertkit_client.configure_addtag_webhook('trial_quota_increase_request', url_base + '/convertkit_trial_quota_increase')
+    convertkit_client.configure_addtag_webhook('patreon_user', url_base + '/convertkit_subscriber_request_patreon_key')
+    convertkit_client.configure_addtag_webhook('trial_api_key_requested', url_base + '/convertkit_subscriber_request_trial_key')
 
 
 if __name__ == '__main__':
