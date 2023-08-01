@@ -63,6 +63,21 @@ def add_subscriber_sequence():
     data = response.json()
     pprint.pprint(data)        
 
+
+def add_subscriber_tag():
+    email = 'languagetools+development.language_tools.customer-20230801-2@mailc.net'
+    first_name = 'Luc'
+    tag_id = 4024166 # vocabai_user
+    url = f'https://api.convertkit.com/v3/tags/{tag_id}/subscribe'
+    response = requests.post(url, json={
+            "api_key": api_key,
+            "email": email,
+            "first_name": first_name
+    })
+    response.raise_for_status()
+    data = response.json()
+    pprint.pprint(data)            
+
 def tag_subscriber():
     # curl -X POST https://api.convertkit.com/v3/tags/<tag_id>/subscribe\
     #      -H "Content-Type: application/json; charset=utf-8"\
@@ -172,7 +187,7 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
                         datefmt='%Y%m%d-%H:%M:%S',
                         level=logging.DEBUG)
-    configure_addtag_webhook()
+    # configure_addtag_webhook()
     # configure_addtag_webhook_trialkey()
     # configure_addtag_webhook_patreonuser()
     # list_tags()
@@ -187,3 +202,4 @@ if __name__ == '__main__':
     # add_subscriber_sequence()
     # list_forms()
     # verify_email()
+    add_subscriber_tag()
