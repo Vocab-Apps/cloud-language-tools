@@ -13,6 +13,8 @@ EASYPRONUNCIATION_USER_DAILY_MAX_CHARACTERS = 136000
 FORVO_USER_DAILY_MAX_REQUESTS = 7000
 
 GETCHEDDAR_CHAR_MULTIPLIER = 1000.0
+# no plan is greater than 2m/month
+GETCHEDDAR_MONTHLY_MAX_CHAR = 2000000
 
 AZURE_CJK_CHAR_MULTIPLIER = 2
 NAVER_AUDIO_CHAR_MULTIPLIER = 6
@@ -186,6 +188,10 @@ class UsageSlice():
 
         # print(f'over_quota: usage_period: {self.usage_period} api_key_type: {self.api_key_type}')
         if self.api_key_type == cloudlanguagetools.constants.ApiKeyType.getcheddar:
+            if self.usage_period == cloudlanguagetools.constants.UsagePeriod.monthly:
+                if characters > GETCHEDDAR_MONTHLY_MAX_CHAR:
+                    return True
+
             if self.usage_period == cloudlanguagetools.constants.UsagePeriod.recurring:
                 if self.api_key_data['thousand_char_overage_allowed'] == 1:
                     # overages allowed, don't restrict

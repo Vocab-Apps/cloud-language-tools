@@ -65,6 +65,22 @@ class TestQuotas(unittest.TestCase):
 
         self.assertEqual(usage_slice_overage_allowed.over_quota(500001, 200), False)
 
+    def test_quotas_getcheddar_monthly_max(self):
+        usage_slice = quotas.UsageSlice(
+            None,
+            cloudlanguagetools.constants.UsageScope.User, 
+            cloudlanguagetools.constants.UsagePeriod.monthly,
+            None,
+            'getcheddar_api_key_1',
+            cloudlanguagetools.constants.ApiKeyType.getcheddar,
+            {'thousand_char_quota': 3000,
+            'thousand_char_overage_allowed': 0,
+            'thousand_char_used': 0})
+
+        self.assertEqual(usage_slice.over_quota(1999999, 200), False)
+        self.assertEqual(usage_slice.over_quota(2000001, 200), True)
+
+
 
     def test_quotas_trial(self):
         usage_slice_monthly_global = quotas.UsageSlice(
