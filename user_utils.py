@@ -941,6 +941,14 @@ class UserUtils():
             grouped_df = grouped_df.sort_values(by='request_mode', ascending=False)
             print(grouped_df.head(50))        
 
+    def custom_action(self):
+        # custom action
+        api_key = 'INSERT_API_KEY_HERE'
+        redis_key = f'clt:usage:user:patreon_monthly:202308:{api_key}'
+        logger.info(f'custom action on {redis_key}') 
+        user_utils.redis_connection.r.hset(redis_key, 'characters', 0)
+
+
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
@@ -957,6 +965,7 @@ if __name__ == '__main__':
         'update_airtable_usage',
         'show_getcheddar_user_data',
         'extend_patreon_key_validity',
+        'oneoff_action',
         'extend_trial_expiration',
         'increase_trial_character_limit',
         'usage_data',
@@ -978,6 +987,8 @@ if __name__ == '__main__':
 
     if args.action == 'update_airtable_all':
         user_utils.update_airtable_all()
+    elif args.action == 'oneoff_action':
+        user_utils.custom_action()
     elif args.action == 'update_airtable_patreon':
         user_utils.update_airtable_patreon()
     elif args.action == 'update_airtable_getcheddar':
