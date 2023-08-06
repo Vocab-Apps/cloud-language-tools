@@ -188,9 +188,10 @@ class UsageSlice():
 
         # print(f'over_quota: usage_period: {self.usage_period} api_key_type: {self.api_key_type}')
         if self.api_key_type == cloudlanguagetools.constants.ApiKeyType.getcheddar:
-            if self.usage_period == cloudlanguagetools.constants.UsagePeriod.monthly:
-                if characters > GETCHEDDAR_MONTHLY_MAX_CHAR:
-                    return True
+            if self.usage_scope == cloudlanguagetools.constants.UsageScope.User:
+                if self.usage_period == cloudlanguagetools.constants.UsagePeriod.monthly:
+                    if characters > GETCHEDDAR_MONTHLY_MAX_CHAR:
+                        return True
 
             if self.usage_period == cloudlanguagetools.constants.UsagePeriod.recurring:
                 if self.api_key_data['thousand_char_overage_allowed'] == 1:
