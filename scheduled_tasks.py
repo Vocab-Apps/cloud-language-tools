@@ -5,6 +5,7 @@ import datetime
 import boto3
 import json
 import os
+import requests
 import redisdb
 import user_utils
 import clt_secrets as secrets
@@ -12,10 +13,26 @@ import sentry_sdk
 import sentry_sdk.crons
 import cloudlanguagetools.servicemanager
 
+logger = logging.getLogger(__name__)
+
+def signal_healthcheck_start(url):
+    try:
+        requests.get(url + '/start', timeout=10)
+    except requests.RequestException as e:
+        logger.exception(f'could not ping url {url}')
+
+def signal_healthcheck_end(url):
+    try:
+        requests.get(url, timeout=10)
+    except requests.RequestException as e:
+        logger.exception(f'could not ping url {url}')
+
 @sentry_sdk.crons.monitor(monitor_slug='backup_redis_db')
 def backup_redis_db():
     try:
         logging.info('START TASK backing up redis db')
+        healthcheck_url = 'https://healthchecks.ipv6n.net/ping/6792d0b5-bd20-4a5f-b601-72a899770275'
+        signal_healthcheck_start(healthcheck_url)
         start_time = time.time()
         connection = redisdb.RedisDb()
 
@@ -51,6 +68,7 @@ def backup_redis_db():
 
         end_time = time.time()
         logging.info(f'END TASK backing up redis db, time elapsed: {end_time - start_time}')
+        signal_healthcheck_end(healthcheck_url)
     except:
         logging.exception(f'could not backup redis db')
 
