@@ -31,7 +31,7 @@ def signal_healthcheck_end(url):
 def backup_redis_db():
     try:
         logging.info('START TASK backing up redis db')
-        healthcheck_url = 'https://healthchecks.ipv6n.net/ping/6792d0b5-bd20-4a5f-b601-72a899770275'
+        healthcheck_url = 'https://healthchecks-v4.ipv6n.net/ping/6792d0b5-bd20-4a5f-b601-72a899770275'
         signal_healthcheck_start(healthcheck_url)
         start_time = time.time()
         connection = redisdb.RedisDb()
