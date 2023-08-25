@@ -21,7 +21,7 @@ class TestQuotas(unittest.TestCase):
         self.assertEqual(quotas.adjust_character_count(services.Azure, request_type, languages.yue, 42), 84)
 
         self.assertEqual(quotas.adjust_character_count(services.Naver, request_type, languages.ja, 10), 60)
-        self.assertEqual(quotas.adjust_character_count(services.ElevenLabs, request_type, languages.en, 10), 180)
+        self.assertEqual(quotas.adjust_character_count(services.ElevenLabs, request_type, languages.en, 10), 150)
 
     def test_quotas_getcheddar(self):
         usage_slice = quotas.UsageSlice(
