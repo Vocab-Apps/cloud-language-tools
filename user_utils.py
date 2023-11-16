@@ -964,6 +964,7 @@ if __name__ == '__main__':
         'update_airtable_trial',
         'update_airtable_usage',
         'show_getcheddar_user_data',
+        'show_getcheddar_customers',
         'extend_patreon_key_validity',
         'oneoff_action',
         'extend_trial_expiration',
@@ -1006,6 +1007,9 @@ if __name__ == '__main__':
         print(user_data_df.dtypes)
     elif args.action == 'cleanup_trial_user_data':
         user_utils.cleanup_user_data_trial()
+    elif args.action == 'show_getcheddar_customers':
+        customers_df = user_utils.get_getcheddar_all_customers()
+        print(customers_df)
     elif args.action == 'show_getcheddar_user_data':
         user_data_df = user_utils.build_user_data_getcheddar(readonly=True)
         print(user_data_df)        

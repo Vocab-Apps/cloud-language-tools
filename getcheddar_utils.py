@@ -10,6 +10,8 @@ import clt_secrets as secrets
 import time
 import cloudlanguagetools.constants
 
+logger = logging.getLogger(__name__)
+
 TRACKED_ITEM_CODE='thousand_chars'
 REQUEST_TIMEOUT=300
 
@@ -162,27 +164,34 @@ class GetCheddarUtils():
             raise ValueError(f'could not get customer data for customer_code {customer_code}: {response.content}')
 
     def get_all_customers(self):
-        # /customers/get/productCode/MY_PRODUCT_CODE
+        logger.info('retrieving active customers')
+        active_customers = self.get_all_customers_by_status('activeOnly')
+        logger.info('done retrieving active customers')
+        logger.info('retrieving all inactive customers')
+        inactive_customers = self.get_all_customers_by_status('canceledOnly')
+        logger.info('done retrieving inactive customers')
+        return active_customers + inactive_customers
+
+    def get_all_customers_by_status(self, status):
         url = f'https://getcheddar.com/xml/customers/get/productCode/{self.product_code}'
         # print(url)
-        logging.info(f'retrieving all getcheddar customer data')
+        logging.info(f'retrieving all getcheddar customer data: {url}, status: {status}')
         result = []
-        response = requests.get(url, auth=(self.user, self.api_key), timeout=REQUEST_TIMEOUT)
-        if response.status_code == 200:
-            # success
-            # self.print_xml_response(response.content)
-            root = xml.etree.ElementTree.fromstring(response.content)
-            customer_list = root.findall('./customer')
-            for customer in customer_list:
-                try:
-                    customer_data = self.decode_customer_element(customer)
-                    result.append(customer_data)
-                except Exception as e:
-                    logging.exception(f'could not decode customer data: {self.xml_short_string(customer)}')
-            return result
-        else:
-            error_message = f'could not get all customer data: {response.content}'
-            raise Exception(error_message)
+        # this request seems to take a very long time
+        timeout=1800
+        response = requests.get(url, params={'subscriptionStatus': status}, auth=(self.user, self.api_key), timeout=timeout)
+        logging.info('finished retrieving getcheddar customer data')
+        response.raise_for_status()
+
+        root = xml.etree.ElementTree.fromstring(response.content)
+        customer_list = root.findall('./customer')
+        for customer in customer_list:
+            try:
+                customer_data = self.decode_customer_element(customer)
+                result.append(customer_data)
+            except Exception as e:
+                logging.exception(f'could not decode customer data: {self.xml_short_string(customer)}')
+        return result
 
 
 
