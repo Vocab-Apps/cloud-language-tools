@@ -945,8 +945,10 @@ class UserUtils():
         # custom action
         api_key = 'INSERT_API_KEY_HERE'
         redis_key = f'clt:usage:user:patreon_monthly:202308:{api_key}'
+        # redis_key = f'clt:usage:user:recurring:{api_key}'
         logger.info(f'custom action on {redis_key}') 
         user_utils.redis_connection.r.hset(redis_key, 'characters', 0)
+        user_utils.redis_connection.r.hset(redis_key, 'requests', 0)
 
 
 
