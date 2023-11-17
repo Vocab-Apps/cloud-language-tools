@@ -22,10 +22,11 @@ def signal_healthcheck_start(url):
         logger.exception(f'could not ping url {url}')
 
 def signal_healthcheck_end(url):
-    try:
-        requests.get(url, timeout=10)
-    except requests.RequestException as e:
-        logger.exception(f'could not ping url {url}')
+    if secrets.config['report_healthchecks']:
+        try:
+            requests.get(url, timeout=10)
+        except requests.RequestException as e:
+            logger.exception(f'could not ping url {url}')
 
 @sentry_sdk.crons.monitor(monitor_slug='backup_redis_db')
 def backup_redis_db():
@@ -105,12 +106,15 @@ def report_getcheddar_usage():
 def update_language_data():
     try:    
         logging.info('START TASK updating language data')
+        healthcheck_url = 'https://healthchecks-v4.ipv6n.net/ping/fe9e35a4-9de2-42cd-9042-a4287231879c'
+        signal_healthcheck_start(healthcheck_url)
         manager = cloudlanguagetools.servicemanager.ServiceManager()
         manager.configure_default()
         language_data = manager.get_language_data_json()
         redis_connection = redisdb.RedisDb()
         redis_connection.store_language_data(language_data)
         logging.info('FINISHED TASK updating language data')
+        signal_healthcheck_end(healthcheck_url)
     except:
         logging.exception(f'could not update language_data')
 
