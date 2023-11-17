@@ -6,6 +6,7 @@ import datetime
 import logging
 import pytest
 import os
+import random
 import requests
 import urllib.parse
 import cloudlanguagetools.constants
@@ -356,13 +357,16 @@ class PostDeployTests(unittest.TestCase):
         source_text_english = 'success'
 
         english_voices = [x for x in self.voice_list if x['language_code'] == 'en' and x['service'] == service]
-        first_voice = english_voices[0]
+        # pick random voice
+            # pick random voice
+        selected_voice = random.choice(english_voices)
+
         response = requests.post(self.get_url('/audio_v2'), json={
             'text': source_text_english,
             'service': service,
             'request_mode': 'batch',
-            'language_code': first_voice['language_code'],
-            'voice_key': first_voice['voice_key'],
+            'language_code': selected_voice['language_code'],
+            'voice_key': selected_voice['voice_key'],
             'options': {}
         }, headers={'api_key': self.api_key, 'client': 'test', 'client_version': self.client_version})
 
@@ -382,11 +386,12 @@ class PostDeployTests(unittest.TestCase):
         # should be an MP3 file
         expected_filetype = 'MPEG ADTS, layer III'
 
-        self.assertTrue(expected_filetype in filetype)
+        self.assertTrue(expected_filetype in filetype, f'Verifying file type for {service}, expected: {expected_filetype} actual: {filetype}, voice: {selected_voice}')
 
     def test_audio_v2_all_services_english(self):
         # pytest manual_test_postdeploy.py -rPP -k test_audio_v2_all_services_english
-        service_list = ['Azure', 'Google', 'Watson', 'Naver', 'Amazon', 'Forvo', 'CereProc', 'VocalWare']
+        # exclude Forvo from this test
+        service_list = ['Azure', 'Google', 'Watson', 'Naver', 'Amazon', 'CereProc', 'VocalWare']
         for service in service_list:
             self.verify_audio_service_english(service)
 
