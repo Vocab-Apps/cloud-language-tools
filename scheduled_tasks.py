@@ -16,10 +16,11 @@ import cloudlanguagetools.servicemanager
 logger = logging.getLogger(__name__)
 
 def signal_healthcheck_start(url):
-    try:
-        requests.get(url + '/start', timeout=10)
-    except requests.RequestException as e:
-        logger.exception(f'could not ping url {url}')
+    if secrets.config['report_healthchecks']:
+        try:
+            requests.get(url + '/start', timeout=10)
+        except requests.RequestException as e:
+            logger.exception(f'could not ping url {url}')
 
 def signal_healthcheck_end(url):
     if secrets.config['report_healthchecks']:
