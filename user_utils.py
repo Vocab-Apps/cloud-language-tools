@@ -250,7 +250,7 @@ class UserUtils():
             email = row['email']
             patreon_user_id = row['patreon_user_id']
             api_key = row['api_key']
-            logger.error(f'could not locate patreon customer on convertkit email: {email} patreon_user_id: {patreon_user_id} api_key: {api_key}')
+            logger.warning(f'could not locate patreon customer on convertkit email: {email} patreon_user_id: {patreon_user_id} api_key: {api_key}')
 
         combined_df = pandas.merge(combined_df, monthly_usage_data_df, how='left', on='api_key')
         combined_df = pandas.merge(combined_df, prev_monthly_usage_data_df, how='left', on='api_key')
@@ -406,7 +406,7 @@ class UserUtils():
         for index, row in convertkit_missed_joins_df.iterrows():
             email = row['email']
             api_key = row['api_key']
-            logger.error(f'could not locate trial customer on convertkit email: {email} api_key: {api_key}')
+            logger.warning(f'could not locate trial customer on convertkit email: {email} api_key: {api_key}')
 
         combined_df = pandas.merge(combined_df, canceled_df, how='left', on='subscriber_id')
         combined_df = pandas.merge(combined_df, tag_data_df, how='left', on='subscriber_id')
@@ -531,7 +531,7 @@ class UserUtils():
         for index, row in convertkit_missed_joins_df.iterrows():
             email = row['email']
             code = row['code']
-            logger.error(f'could not locate getcheddar customer on convertkit email: {email} code: {code}')
+            logger.warning(f'could not locate getcheddar customer on convertkit email: {email} code: {code}')
 
         combined_df = pandas.merge(combined_df, getcheddar_customer_data_df, how='left', on='code')
         if len(monthly_usage_data_df) > 0:
@@ -798,7 +798,7 @@ class UserUtils():
         # find duplicate emails in user_data_df
         duplicate_emails_df = user_data_df[user_data_df.duplicated(['email'], keep=False)]
         if len(duplicate_emails_df) > 0:
-            logger.error(f"found duplicate emails in user_data_df: {duplicate_emails_df[['email', 'api_key', 'api_key_expiration', 'subscriber_id']]}")
+            logger.warning(f"found duplicate emails in user_data_df: {duplicate_emails_df[['email', 'api_key', 'api_key_expiration', 'subscriber_id']]}")
         # remove duplicate emails
         user_data_df = user_data_df.drop_duplicates(subset=['email'], keep='first')
 
