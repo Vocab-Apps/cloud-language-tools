@@ -18,6 +18,7 @@ GETCHEDDAR_MONTHLY_MAX_CHAR = 2000000
 
 AZURE_CJK_CHAR_MULTIPLIER = 2
 NAVER_AUDIO_CHAR_MULTIPLIER = 6
+OPENAI_AUDIO_CHAR_MULTIPLIER = 2
 ELEVENLABS_AUDIO_CHAR_MULTIPLIER = 15
 
 BREAKDOWN_CHAR_MULTIPLIER = 3
@@ -134,6 +135,10 @@ def adjust_character_count(
     if service == cloudlanguagetools.constants.Service.ElevenLabs:
         if request_type == cloudlanguagetools.constants.RequestType.audio:
             return characters * ELEVENLABS_AUDIO_CHAR_MULTIPLIER
+
+    if service == cloudlanguagetools.constants.Service.OpenAI:
+        if request_type == cloudlanguagetools.constants.RequestType.audio:
+            return characters * OPENAI_AUDIO_CHAR_MULTIPLIER
 
     return characters
 
