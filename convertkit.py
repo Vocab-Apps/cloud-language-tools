@@ -211,7 +211,7 @@ class ConvertKit():
         # throttle
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         if response.status_code != 200:
-            logger.error(f'could not tag user email: [{email}]: response: {response.content}')
+            logger.warn(f'could not tag user email: [{email}]: response: {response.content}')
         else:
             logger.info(f'tagged user with tag_id {tag_id}: {email}')
 
