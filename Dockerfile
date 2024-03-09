@@ -11,7 +11,7 @@
 # inspecting space usage
 # docker container exec 224e53da8507 du -hc --max-depth=1 /root
 
-FROM lucwastiaux/cloud-language-tools-core:7.5
+FROM lucwastiaux/cloud-language-tools-core:11.0.3
 
 ARG GPG_PASSPHRASE
 
