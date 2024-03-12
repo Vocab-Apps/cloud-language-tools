@@ -11,6 +11,20 @@ import requests
 import urllib.parse
 import cloudlanguagetools.constants
 
+logger = logging.getLogger(__name__)
+
+def get_authenticated(base_url, url_endpoint, api_key, use_vocab_api=False):
+    if use_vocab_api:
+        url = f'{base_url}/languagetools-api/v2/{url_endpoint}'
+        response = requests.get(url, headers={
+            'Content-Type': 'application/json', 
+            'Authorization': f'Api-Key {api_key}'})
+    else:
+        url = f'{base_url}/{url_endpoint}'
+        response = requests.get(url, headers={'Content-Type': 'application/json', 'api_key': api_key})
+    response.raise_for_status()    
+    return response.json()
+
 class PostDeployTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -18,29 +32,33 @@ class PostDeployTests(unittest.TestCase):
 
         cls.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         cls.api_key=os.environ['ANKI_LANGUAGE_TOOLS_API_KEY']
+        cls.use_vocab_api = int(os.environ.get('ANKI_LANGUAGE_TOOLS_API_VOCAB', 0)) == 1
         cls.client_version = 'v0.01'
 
-        response = requests.get(f'{cls.base_url}/voice_list')
-        cls.voice_list = response.json()
+        cls.voice_list = get_authenticated(cls.base_url, 'voice_list', cls.api_key, use_vocab_api=cls.use_vocab_api)
 
     @classmethod
     def tearDownClass(cls):
         pass
 
     def get_url(self, path):
-        return f'{self.base_url}{path}'
+        if self.use_vocab_api:
+            return f'{self.base_url}/languagetools-api/v2/{path}'
+        else:
+            return f'{self.base_url}{path}'
 
     def test_verify_api_key(self):
         # pytest test_postdeploy.py -rPP -k test_verify_api_key
         response = requests.post(self.get_url('/verify_api_key'), json={'api_key': self.api_key})
+        response.raise_for_status()
         data = response.json()
         self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
 
 
     def test_language_list(self):
-        # pytest test_postdeploy.py -rPP -k test_language_list
-        response = requests.get(self.get_url('/language_list'))
-        actual_language_list = response.json()
+        # pytest manual_test_postdeploy.py -rPP -s -k test_language_list
+        actual_language_list = get_authenticated(self.base_url, 'language_list', self.api_key, use_vocab_api=self.use_vocab_api)
+
         self.assertTrue('fr' in actual_language_list)
         self.assertEqual(actual_language_list['fr'], 'French')
         self.assertEqual(actual_language_list['yue'], 'Chinese (Cantonese, Traditional)')
