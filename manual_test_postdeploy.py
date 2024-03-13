@@ -108,13 +108,17 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue(len(language1['service']) > 0)
 
     def test_transliteration_language_list(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+        # pytest manual_test_postdeploy.py -rPP -k 'test_transliteration_language_list'
 
-        # pytest test_postdeploy.py -rPP -k 'test_transliteration_language_list'
+        if self.use_vocab_api:
+            # on vocabai API, only the language_data endpoint is supported
+            language_data = self.get_request_authenticated('language_data')
+            transliteration_language_list = language_data['transliteration_options']
+        else:
+            response = requests.get(self.get_url('/transliteration_language_list'))
+            transliteration_language_list = response.json()
 
-        response = requests.get(self.get_url('/transliteration_language_list'))
-        transliteration_language_list = response.json()
+
         self.assertTrue(len(transliteration_language_list) > 30) # 
         
         subset_1 = [x for x in transliteration_language_list if x['language_code'] == 'zh_cn']
