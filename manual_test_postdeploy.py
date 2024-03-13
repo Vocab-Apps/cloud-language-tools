@@ -41,6 +41,9 @@ class PostDeployTests(unittest.TestCase):
     def tearDownClass(cls):
         pass
 
+    def get_request_authenticated(self, url_endpoint):
+        return get_authenticated(self.base_url, url_endpoint, self.api_key, use_vocab_api=self.use_vocab_api)
+
     def get_url(self, path):
         if self.use_vocab_api:
             return f'{self.base_url}/languagetools-api/v2/{path}'
@@ -48,10 +51,8 @@ class PostDeployTests(unittest.TestCase):
             return f'{self.base_url}{path}'
 
     def test_verify_api_key(self):
-        # pytest test_postdeploy.py -rPP -k test_verify_api_key
-        response = requests.post(self.get_url('/verify_api_key'), json={'api_key': self.api_key})
-        response.raise_for_status()
-        data = response.json()
+        # pytest manual_test_postdeploy.py -rPP -s -k test_verify_api_key
+        data = self.get_request_authenticated('verify_api_key')
         self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
 
 
@@ -65,10 +66,10 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(actual_language_list['zh_cn'], 'Chinese (Simplified)')
 
     def test_voice_list(self):
-        # pytest test_postdeploy.py -rPP -k test_voice_list
+        # pytest manual_test_postdeploy.py -rPP -s -k test_voice_list
 
-        response = requests.get(self.get_url('/voice_list'))
-        voice_list = response.json()
+        voice_list = self.get_request_authenticated('voice_list')
+
         self.assertTrue(len(voice_list) > 100) # with google and azure, we already have 400 voices or so
         
         subset_1 = [x for x in voice_list if x['language_code'] == 'fr']
