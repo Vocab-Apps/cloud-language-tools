@@ -25,6 +25,19 @@ def get_authenticated(base_url, url_endpoint, api_key, use_vocab_api=False):
     response.raise_for_status()    
     return response.json()
 
+def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=False):
+    if use_vocab_api:
+        url = f'{base_url}/languagetools-api/v2/{url_endpoint}'
+        logger.info(f'post request on url {url}')
+        response = requests.post(url, json=data, headers={
+            'Content-Type': 'application/json', 
+            'Authorization': f'Api-Key {api_key}'})
+    else:
+        url = f'{base_url}/{url_endpoint}'
+        response = requests.post(url, json=data, headers={'Content-Type': 'application/json', 'api_key': api_key})
+    response.raise_for_status()    
+    return response.json()
+
 class PostDeployTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -43,6 +56,9 @@ class PostDeployTests(unittest.TestCase):
 
     def get_request_authenticated(self, url_endpoint):
         return get_authenticated(self.base_url, url_endpoint, self.api_key, use_vocab_api=self.use_vocab_api)
+
+    def post_request_authenticated(self, url_endpoint, data):
+        return post_authenticated(self.base_url, url_endpoint, self.api_key, data, use_vocab_api=self.use_vocab_api)
 
     def get_url(self, path):
         if self.use_vocab_api:
@@ -133,53 +149,41 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_translate(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
-
-        # pytest test_postdeploy.py -rPP -k test_translate
+        # pytest manual_test_postdeploy.py -rPP -k test_translate
 
         source_text = 'Je ne suis pas intéressé.'
-        response = requests.post(self.get_url('/translate'), json={
+        data = self.post_request_authenticated('translate', {
             'text': source_text,
             'service': 'Azure',
             'from_language_key': 'fr',
             'to_language_key': 'en'
-        }, headers={'api_key': self.api_key})
-
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
+        })
         self.assertEqual(data['translated_text'], "I'm not interested.")
 
         # locate the azure language_id for simplified chinese
-        response = requests.get(self.get_url('/translation_language_list'))
-        translation_language_list = response.json()
+        language_data = self.get_request_authenticated('language_data')
+        translation_language_list = language_data['translation_options']
         chinese_azure = [x for x in translation_language_list if x['language_code'] == 'zh_cn' and x['service'] == 'Azure']
         translation_azure_chinese = chinese_azure[0]
 
-        response = requests.post(self.get_url('/translate'), json={
+        data = self.post_request_authenticated('translate', {
             'text': '中国有很多外国人',
             'service': 'Azure',
             'from_language_key': translation_azure_chinese['language_id'],
             'to_language_key': 'en'
-        }, headers={'api_key': self.api_key})
-
-        data = response.json()
-        self.assertEqual(response.status_code, 200)
+        })
         self.assertIn(data['translated_text'], ['There are many foreigners in China', 'There are a lot of foreigners in China'])
 
     def test_translate_all(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')        
+        # pytest manual_test_postdeploy.py -k test_translate_all
 
-        # pytest test_api.py -k test_translate_all
         source_text = '成本很低'
-        response = requests.post(self.get_url('/translate_all'), json={
+        data = self.post_request_authenticated('translate_all', {
             'text': source_text,
             'from_language': 'zh_cn',
             'to_language': 'fr'
-        }, headers={'api_key': self.api_key})
+        })
 
-        data = response.json()
         possible_translations = ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût', 'Le coût est très bas', 'Le coût est très faible',
             'Très faible coût']
         self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
@@ -188,16 +192,24 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(data['Watson'], 'Le coût est très bas.')
 
     def test_translate_error(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+
 
         source_text = 'Je ne suis pas intéressé.'
-        response = requests.post(self.get_url('/translate'), json={
+
+        translate_url = self.get_url('translate')
+        json_data = {
             'text': source_text,
             'service': 'Azure',
             'from_language_key': 'fr',
             'to_language_key': 'zh_cn'
-        }, headers={'api_key': self.api_key})
+        }
+
+        if self.use_vocab_api:
+            response = requests.post(translate_url, json=json_data, headers={
+            'Content-Type': 'application/json', 
+            'Authorization': f'Api-Key {self.api_key}'})
+        else:
+            response = requests.post(translate_url, json=json_data, headers={'api_key': self.api_key})
 
         self.assertEqual(response.status_code, 400)
         error_response = response.json()
