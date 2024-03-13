@@ -86,13 +86,15 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue('voice_key' in voice1)
 
     def test_translation_language_list(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
-
-        # pytest test_postdeploy.py -rPP -k 'test_translation_language_list'
-
-        response = requests.get(self.get_url('/translation_language_list'))
-        translation_language_list = response.json()
+        # pytest manual_test_postdeploy.py -rPP -k 'test_translation_language_list'
+        if self.use_vocab_api:
+            # on vocabai API, only the language_data endpoint is supported
+            language_data = self.get_request_authenticated('language_data')
+            translation_language_list = language_data['translation_options']
+        else:
+            # translation_language_list in the old way of doing things
+            response = requests.get(self.get_url('/translation_language_list'))
+            translation_language_list = response.json()
         self.assertTrue(len(translation_language_list) > 100) # with google and azure, we already have 400 voices or so
         
         subset_1 = [x for x in translation_language_list if x['language_code'] == 'fr']
