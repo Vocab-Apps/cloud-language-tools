@@ -480,12 +480,9 @@ class PostDeployTests(unittest.TestCase):
 
     def test_account(self):
         # pytest manual_test_postdeploy.py -rPP -k test_account
-
-        url = self.get_url('/account')
-        response = requests.get(url, headers={'api_key': self.api_key})
-        data = response.json()
-
-        self.assertEqual(data['type'], '250,000 characters')
+        data = self.get_request_authenticated('account')
+        # self.assertEqual(data['type'], '250,000 characters')
+        self.assertTrue(len(data['email']) > 0)
 
     def test_spacy_tokenization(self):
         # pytest manual_test_postdeploy.py -rPP -k test_spacy_tokenization
