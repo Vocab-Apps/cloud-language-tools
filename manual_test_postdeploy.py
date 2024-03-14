@@ -8,6 +8,7 @@ import pytest
 import os
 import random
 import requests
+import pprint
 import urllib.parse
 import cloudlanguagetools.constants
 
@@ -29,12 +30,16 @@ def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=Fals
     if use_vocab_api:
         url = f'{base_url}/languagetools-api/v2/{url_endpoint}'
         logger.info(f'post request on url {url}')
-        response = requests.post(url, json=data, headers={
-            'Content-Type': 'application/json', 
-            'Authorization': f'Api-Key {api_key}'})
+        headers = {
+            # 'Content-Type': 'application/json', 
+            'Authorization': f'Api-Key {api_key}'
+        }
+        response = requests.post(url, json=data, headers=headers)
     else:
         url = f'{base_url}/{url_endpoint}'
         response = requests.post(url, json=data, headers={'Content-Type': 'application/json', 'api_key': api_key})
+    if response.status_code != 200:
+        logger.error(f'Error in post_authenticated, url: {url}, status_code: {response.status_code}, response: {response.text}, data: {data}')
     response.raise_for_status()    
     return response.json()
 
@@ -217,12 +222,20 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue('The target language is not valid' in error_message)
 
 
-    def test_transliteration(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+    def get_transliteration_options(self):
+        if self.use_vocab_api:
+            # on vocabai API, only the language_data endpoint is supported
+            language_data = self.get_request_authenticated('language_data')
+            transliteration_language_list = language_data['transliteration_options']
+        else:
+            response = requests.get(self.get_url('/transliteration_language_list'))
+            transliteration_language_list = response.json()
 
-        response = requests.get(self.get_url('/transliteration_language_list'))
-        transliteration_language_list = response.json()
+        return transliteration_language_list
+
+
+    def test_transliteration(self):
+        transliteration_language_list = self.get_transliteration_options()
 
         service = 'Azure'
         source_text = '成本很低'
@@ -233,22 +246,16 @@ class PostDeployTests(unittest.TestCase):
         service = transliteration_option['service']
         transliteration_key = transliteration_option['transliteration_key']
 
-        response = requests.post(self.get_url('/transliterate'), json={
+        data = self.post_request_authenticated('transliterate', {
             'text': source_text,
             'service': service,
             'transliteration_key': transliteration_key
-        }, headers={'api_key': self.api_key})
-
-        result = response.json()
-        self.assertEqual({'transliterated_text': 'chéngběn hěndī'}, result)
+        })
+        self.assertEqual({'transliterated_text': 'chéngběn hěndī'}, data)
 
     def test_transliteration_mandarin_cantonese(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            # skip 
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
-
-        response = requests.get(self.get_url('/transliteration_language_list'))
-        transliteration_language_list = response.json()
+        # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_transliteration_mandarin_cantonese
+        transliteration_language_list = self.get_transliteration_options()
 
         service = 'MandarinCantonese'
         source_text = '成本很低'
@@ -263,23 +270,17 @@ class PostDeployTests(unittest.TestCase):
         transliteration_option = selected_candidate[0]
         service = transliteration_option['service']
         transliteration_key = transliteration_option['transliteration_key']
+        logger.info(pprint.pformat(transliteration_key))
 
-        response = requests.post(self.get_url('/transliterate'), json={
+        data = self.post_request_authenticated('transliterate', {
             'text': source_text,
             'service': service,
             'transliteration_key': transliteration_key
-        }, headers={'api_key': self.api_key})
-
-        result = response.json()
-        self.assertEqual({'transliterated_text': 'chéngběn hěn dī'}, result)
+        })
+        self.assertEqual({'transliterated_text': 'chéngběn hěn dī'}, data)
 
     def test_transliteration_mandarin_cantonese_2(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            # skip 
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
-
-        response = requests.get(self.get_url('/transliteration_language_list'))
-        transliteration_language_list = response.json()
+        transliteration_language_list = self.get_transliteration_options()
 
         service = 'MandarinCantonese'
         source_text = '好多嘢要搞'
@@ -295,14 +296,13 @@ class PostDeployTests(unittest.TestCase):
         service = transliteration_option['service']
         transliteration_key = transliteration_option['transliteration_key']
 
-        response = requests.post(self.get_url('/transliterate'), json={
+        data = self.post_request_authenticated('transliterate', {
             'text': source_text,
             'service': service,
             'transliteration_key': transliteration_key
-        }, headers={'api_key': self.api_key})
+        })
 
-        result = response.json()
-        self.assertEqual({'transliterated_text': 'hóudō jě jîu gáau'}, result)
+        self.assertEqual({'transliterated_text': 'hóudō jě jîu gáau'}, data)
 
 
     def test_detection(self):
