@@ -330,7 +330,7 @@ class PostDeployTests(unittest.TestCase):
         # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_audio
         # get one azure voice for french
 
-        if not self.use_vocab_api:
+        if self.use_vocab_api:
             # skip
             raise unittest.SkipTest(f'Vocab API not enabled, skipping, only v2 endpoint enabled')
 
@@ -487,9 +487,9 @@ class PostDeployTests(unittest.TestCase):
     def test_spacy_tokenization(self):
         # pytest manual_test_postdeploy.py -rPP -k test_spacy_tokenization
 
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            # skip 
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
+        if self.use_vocab_api:
+            # skip
+            raise unittest.SkipTest(f'tokenize_v1 not implemented on vocabai')
 
         service = 'Spacy'
 
