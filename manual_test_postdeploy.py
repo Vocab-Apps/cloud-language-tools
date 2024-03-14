@@ -100,7 +100,7 @@ class PostDeployTests(unittest.TestCase):
             # skip, api endpoint not implemented
             raise unittest.SkipTest(f'Verify API key not implemented on vocabai')
 
-        response = requests.post(self.get_url('/verify_api_key'), json={'api_key': self.api_key})
+        response = requests.post(self.get_url('verify_api_key'), json={'api_key': self.api_key})
         data = response.json()
 
         self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
@@ -143,7 +143,7 @@ class PostDeployTests(unittest.TestCase):
             translation_language_list = language_data['translation_options']
         else:
             # translation_language_list in the old way of doing things
-            response = requests.get(self.get_url('/translation_language_list'))
+            response = requests.get(self.get_url('translation_language_list'))
             translation_language_list = response.json()
         self.assertTrue(len(translation_language_list) > 100) # with google and azure, we already have 400 voices or so
         
@@ -165,7 +165,7 @@ class PostDeployTests(unittest.TestCase):
             language_data = self.get_request_authenticated('language_data')
             transliteration_language_list = language_data['transliteration_options']
         else:
-            response = requests.get(self.get_url('/transliteration_language_list'))
+            response = requests.get(self.get_url('transliteration_language_list'))
             transliteration_language_list = response.json()
 
 
@@ -258,7 +258,7 @@ class PostDeployTests(unittest.TestCase):
             language_data = self.get_request_authenticated('language_data')
             transliteration_language_list = language_data['transliteration_options']
         else:
-            response = requests.get(self.get_url('/transliteration_language_list'))
+            response = requests.get(self.get_url('transliteration_language_list'))
             transliteration_language_list = response.json()
 
         return transliteration_language_list
@@ -508,6 +508,19 @@ class PostDeployTests(unittest.TestCase):
         # self.assertEqual(data['type'], '250,000 characters')
         self.assertTrue(len(data['email']) > 0)
 
+    def test_account_wrong_api_key(self):
+        # pytest manual_test_postdeploy.py -rPP -k test_account_wrong_api_key
+
+        if not self.use_vocab_api:
+            # skip
+            raise unittest.SkipTest(f'only test this on vocabai')
+
+        fake_api_key = 'FAKENONEXISTENTAPIKEY'
+        response = requests.get(self.get_url('account'), headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Api-Key {fake_api_key}'})
+        self.assertEqual(response.status_code, 403)
+
     def test_spacy_tokenization(self):
         # pytest manual_test_postdeploy.py -rPP -k test_spacy_tokenization
 
@@ -524,7 +537,7 @@ class PostDeployTests(unittest.TestCase):
             'model_name': 'en'
         }
 
-        url = self.get_url('/tokenize_v1')
+        url = self.get_url('tokenize_v1')
         response = requests.post(url, json={
             'text': source_text,
             'service': service,
@@ -541,7 +554,7 @@ class PostDeployTests(unittest.TestCase):
             'model_name': 'fr'
         }
 
-        url = self.get_url('/tokenize_v1')
+        url = self.get_url('tokenize_v1')
         response = requests.post(url, json={
             'text': source_text,
             'service': service,
@@ -557,7 +570,7 @@ class PostDeployTests(unittest.TestCase):
             'model_name': 'zh_jieba'
         }
 
-        url = self.get_url('/tokenize_v1')
+        url = self.get_url('tokenize_v1')
         response = requests.post(url, json={
             'text': source_text,
             'service': service,
