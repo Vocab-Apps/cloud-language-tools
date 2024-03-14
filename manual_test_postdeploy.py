@@ -100,7 +100,9 @@ class PostDeployTests(unittest.TestCase):
             # skip, api endpoint not implemented
             raise unittest.SkipTest(f'Verify API key not implemented on vocabai')
 
-        data = self.get_request_authenticated('verify_api_key')
+        response = requests.post(self.get_url('/verify_api_key'), json={'api_key': self.api_key})
+        data = response.json()
+
         self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
 
 
