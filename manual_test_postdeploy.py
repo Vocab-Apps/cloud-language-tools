@@ -14,6 +14,9 @@ import cloudlanguagetools.constants
 
 logger = logging.getLogger(__name__)
 
+CLIENT_VERSION='v0.01'
+CLIENT_NAME='test'
+
 def get_authenticated(base_url, url_endpoint, api_key, use_vocab_api=False):
     if use_vocab_api:
         url = f'{base_url}/languagetools-api/v2/{url_endpoint}'
@@ -37,7 +40,13 @@ def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=Fals
         response = requests.post(url, json=data, headers=headers)
     else:
         url = f'{base_url}/{url_endpoint}'
-        response = requests.post(url, json=data, headers={'Content-Type': 'application/json', 'api_key': api_key})
+        headers = headers={
+            'Content-Type': 'application/json', 
+            'api_key': api_key,
+            'client': CLIENT_NAME, 
+            'client_version': CLIENT_VERSION
+        }
+        response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
         logger.error(f'Error in post_authenticated, url: {url}, status_code: {response.status_code}, response: {response.text}, data: {data}')
     response.raise_for_status()    
@@ -54,7 +63,7 @@ class PostDeployTests(unittest.TestCase):
         cls.base_url = os.environ['ANKI_LANGUAGE_TOOLS_BASE_URL']
         cls.api_key=os.environ['ANKI_LANGUAGE_TOOLS_API_KEY']
         cls.use_vocab_api = int(os.environ.get('ANKI_LANGUAGE_TOOLS_API_VOCAB', 0)) == 1
-        cls.client_version = 'v0.01'
+        cls.client_version = CLIENT_VERSION
 
         cls.voice_list = get_authenticated(cls.base_url, 'voice_list', cls.api_key, use_vocab_api=cls.use_vocab_api)
 
