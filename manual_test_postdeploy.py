@@ -26,12 +26,12 @@ def get_authenticated(base_url, url_endpoint, api_key, use_vocab_api=False):
     response.raise_for_status()    
     return response.json()
 
-def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=False):
+def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=False, return_json=True):
     if use_vocab_api:
         url = f'{base_url}/languagetools-api/v2/{url_endpoint}'
         logger.info(f'post request on url {url}')
         headers = {
-            # 'Content-Type': 'application/json', 
+            'Content-Type': 'application/json', 
             'Authorization': f'Api-Key {api_key}'
         }
         response = requests.post(url, json=data, headers=headers)
@@ -41,7 +41,10 @@ def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=Fals
     if response.status_code != 200:
         logger.error(f'Error in post_authenticated, url: {url}, status_code: {response.status_code}, response: {response.text}, data: {data}')
     response.raise_for_status()    
-    return response.json()
+    if return_json:
+        return response.json()
+    else:
+        return response.content
 
 class PostDeployTests(unittest.TestCase):
     @classmethod
@@ -63,7 +66,10 @@ class PostDeployTests(unittest.TestCase):
         return get_authenticated(self.base_url, url_endpoint, self.api_key, use_vocab_api=self.use_vocab_api)
 
     def post_request_authenticated(self, url_endpoint, data):
-        return post_authenticated(self.base_url, url_endpoint, self.api_key, data, use_vocab_api=self.use_vocab_api)
+        return post_authenticated(self.base_url, url_endpoint, self.api_key, data, use_vocab_api=self.use_vocab_api, return_json=True)
+    
+    def post_request_authenticated_audio(self, url_endpoint, data):
+        return post_authenticated(self.base_url, url_endpoint, self.api_key, data, use_vocab_api=self.use_vocab_api, return_json=False)
 
     def get_url(self, path):
         if self.use_vocab_api:
@@ -320,24 +326,29 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_audio(self):
-        # pytest test_postdeploy.py -k test_audio
+        # pytest manual_test_postdeploy.py -k test_audio
+        # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_audio
         # get one azure voice for french
+
+        if not self.use_vocab_api:
+            # skip
+            raise unittest.SkipTest(f'Vocab API not enabled, skipping, only v2 endpoint enabled')
+
         service = 'Azure'
         french_voices = [x for x in self.voice_list if x['language_code'] == 'fr' and x['service'] == service]
         first_voice = french_voices[0]
 
-        response = requests.post(self.get_url('/audio'), json={
+
+        content = self.post_request_authenticated_audio('audio', {
             'text': 'Je ne suis pas intéressé.',
             'service': service,
             'voice_key': first_voice['voice_key'],
             'options': {}
-        }, headers={'api_key': self.api_key})
-
-        self.assertEqual(response.status_code, 200)
+        })
 
         output_temp_file = tempfile.NamedTemporaryFile()
         with open(output_temp_file.name, 'wb') as f:
-            f.write(response.content)
+            f.write(content)
         f.close()
 
         # verify file type
@@ -349,6 +360,7 @@ class PostDeployTests(unittest.TestCase):
 
     def test_audio_v2(self):
         # pytest test_api.py -k test_audio_v2
+        # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_audio_v2
 
 
         source_text_french = 'Je ne suis pas intéressé.'
@@ -359,7 +371,11 @@ class PostDeployTests(unittest.TestCase):
         service = 'Azure'
         french_voices = [x for x in self.voice_list if x['language_code'] == 'fr' and x['service'] == service]
         first_voice = french_voices[0]
-        response = requests.post(self.get_url('/audio_v2'), json={
+        url_endpoint = 'audio'
+        if not self.use_vocab_api:
+            url_endpoint = 'audio_v2'
+
+        content = self.post_request_authenticated_audio(url_endpoint, {
             'text': source_text_french,
             'service': service,
             'deck_name': 'french_deck_1',
@@ -367,14 +383,12 @@ class PostDeployTests(unittest.TestCase):
             'language_code': first_voice['language_code'],
             'voice_key': first_voice['voice_key'],
             'options': {}
-        }, headers={'api_key': self.api_key, 'client': 'test', 'client_version': self.client_version})
-
-        self.assertEqual(response.status_code, 200)
+        })
 
         # retrieve file
         output_temp_file = tempfile.NamedTemporaryFile()
         with open(output_temp_file.name, 'wb') as f:
-            f.write(response.content)
+            f.write(content)
         f.close()
 
         # perform checks on file
@@ -395,21 +409,23 @@ class PostDeployTests(unittest.TestCase):
             # pick random voice
         selected_voice = random.choice(english_voices)
 
-        response = requests.post(self.get_url('/audio_v2'), json={
+        url_endpoint = 'audio'
+        if not self.use_vocab_api:
+            url_endpoint = 'audio_v2'
+
+        content = self.post_request_authenticated_audio(url_endpoint, {
             'text': source_text_english,
             'service': service,
             'request_mode': 'batch',
             'language_code': selected_voice['language_code'],
             'voice_key': selected_voice['voice_key'],
             'options': {}
-        }, headers={'api_key': self.api_key, 'client': 'test', 'client_version': self.client_version})
-
-        self.assertEqual(response.status_code, 200, msg=f'Verifying status code for {service}')
+        })
 
         # retrieve file
         output_temp_file = tempfile.NamedTemporaryFile()
         with open(output_temp_file.name, 'wb') as f:
-            f.write(response.content)
+            f.write(content)
         f.close()
 
         # perform checks on file
