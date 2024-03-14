@@ -306,19 +306,16 @@ class PostDeployTests(unittest.TestCase):
 
 
     def test_detection(self):
-        if int(os.environ['CLT_RUN_NLP_TESTS']) == 0:
-            raise unittest.SkipTest(f'NLP tests not enabled, skipping')
 
         source_list = [
             'Pouvez-vous me faire le change ?',
             'Pouvez-vous débarrasser la table, s\'il vous plaît?'
         ]
 
-        response = requests.post(self.get_url('/detect'), json={
+        data = self.post_request_authenticated('detect', {
             'text_list': source_list
-        }, headers={'api_key': self.api_key})
+        })
 
-        data = response.json()
         self.assertEqual(data['detected_language'], 'fr')
 
 
