@@ -86,6 +86,13 @@ class PostDeployTests(unittest.TestCase):
         else:
             return f'{self.base_url}{path}'
 
+
+    def get_language_data(self):
+        url_endpoint = 'language_data'
+        if not self.use_vocab_api:
+            url_endpoint = 'language_data_v1'
+        return self.get_request_authenticated(url_endpoint)
+
     def test_verify_api_key(self):
         # pytest manual_test_postdeploy.py -rPP -s -k test_verify_api_key
         data = self.get_request_authenticated('verify_api_key')
@@ -181,7 +188,7 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(data['translated_text'], "I'm not interested.")
 
         # locate the azure language_id for simplified chinese
-        language_data = self.get_request_authenticated('language_data')
+        language_data = self.get_language_data()
         translation_language_list = language_data['translation_options']
         chinese_azure = [x for x in translation_language_list if x['language_code'] == 'zh_cn' and x['service'] == 'Azure']
         translation_azure_chinese = chinese_azure[0]
@@ -556,7 +563,7 @@ class PostDeployTests(unittest.TestCase):
         source_language = 'en'
         target_language = 'fr'
 
-        language_data = self.get_request_authenticated('language_data')
+        language_data = self.get_language_data()
 
         # choose breakdown
         tokenization_service = 'Spacy'
