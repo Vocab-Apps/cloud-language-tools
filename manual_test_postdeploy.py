@@ -84,7 +84,7 @@ class PostDeployTests(unittest.TestCase):
         if self.use_vocab_api:
             return f'{self.base_url}/languagetools-api/v2/{path}'
         else:
-            return f'{self.base_url}{path}'
+            return f'{self.base_url}/{path}'
 
 
     def get_language_data(self):
@@ -95,6 +95,11 @@ class PostDeployTests(unittest.TestCase):
 
     def test_verify_api_key(self):
         # pytest manual_test_postdeploy.py -rPP -s -k test_verify_api_key
+
+        if self.use_vocab_api:
+            # skip, api endpoint not implemented
+            raise unittest.SkipTest(f'Verify API key not implemented on vocabai')
+
         data = self.get_request_authenticated('verify_api_key')
         self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
 
@@ -219,11 +224,12 @@ class PostDeployTests(unittest.TestCase):
         self.assertEqual(data['Watson'], 'Le coût est très bas.')
 
     def test_translate_error(self):
-
+        # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_translate_error
 
         source_text = 'Je ne suis pas intéressé.'
 
         translate_url = self.get_url('translate')
+        logger.info(f'translate_url: {translate_url}')
         json_data = {
             'text': source_text,
             'service': 'Azure',
