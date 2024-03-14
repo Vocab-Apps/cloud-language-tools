@@ -542,6 +542,78 @@ class PostDeployTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
 
+    def test_breakdown(self):
+        text = "I was reading today's paper."
+        source_language = 'en'
+        target_language = 'fr'
+
+        language_data = self.get_request_authenticated('language_data')
+
+        # choose breakdown
+        tokenization_service = 'Spacy'
+        tokenization_candidates = [x for x in language_data['tokenization_options'] if x['language_code'] == source_language and x['service'] == tokenization_service]
+        self.assertEqual(len(tokenization_candidates), 1)
+        tokenization_option = tokenization_candidates[0]
+
+        # choose transliteration
+        transliteration_service = 'Epitran'
+        transliteration_candidates = [x for x in language_data['transliteration_options'] if x['language_code'] == source_language and x['service'] == transliteration_service]
+        transliteration_option = transliteration_candidates[0]
+
+        # choose translation
+        translation_service = 'Azure'
+        source_language_id = [x for x in language_data['translation_options'] if x['language_code'] == source_language and x['service'] == translation_service][0]['language_id']
+        target_language_id = [x for x in language_data['translation_options'] if x['language_code'] == target_language and x['service'] == translation_service][0]['language_id']
+        translation_option = {
+            'service': translation_service,
+            'source_language_id': source_language_id,
+            'target_language_id': target_language_id
+        }
+
+        # run the breakdown
+        url_endpoint = 'breakdown'
+        if not self.use_vocab_api:
+            url_endpoint = 'breakdown_v1'
+        breakdown_result = self.post_request_authenticated(url_endpoint, {
+            'text': text,
+            'tokenization_option': tokenization_option,
+            'translation_option': translation_option,
+            'transliteration_option': transliteration_option
+        })
+
+        pprint.pprint(breakdown_result)
+
+        expected_output = [{'lemma': 'I',
+        'pos_description': 'pronoun, personal',
+        'token': 'I',
+        'translation': 'Je',
+        'transliteration': 'aj'},
+        {'lemma': 'be',
+        'pos_description': 'verb, past tense',
+        'token': 'was',
+        'translation': 'être',
+        'transliteration': 'wɑz'},
+        {'lemma': 'read',
+        'pos_description': 'verb, gerund or present participle',
+        'token': 'reading',
+        'translation': 'lire',
+        'transliteration': 'ɹɛdɪŋ'},
+        {'lemma': 'today',
+        'pos_description': 'noun, singular or mass',
+        'token': 'today',
+        'translation': 'Aujourd’hui',
+        'transliteration': 'tədej'},
+        {'lemma': "'s", 'pos_description': 'possessive ending', 'token': "'s"},
+        {'lemma': 'paper',
+        'pos_description': 'noun, singular or mass',
+        'token': 'paper',
+        'translation': 'papier',
+        'transliteration': 'pejpɹ̩'},
+        {'lemma': '.',
+        'pos_description': 'punctuation mark, sentence closer',
+        'token': '.'}]
+
+        self.assertEqual(breakdown_result['breakdown'], expected_output)
 
 
 
