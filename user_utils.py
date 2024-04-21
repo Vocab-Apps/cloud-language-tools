@@ -574,14 +574,12 @@ class UserUtils():
             clients = row['clients']
             if 'hypertts' in clients:
                 fields['client_name'] = 'HyperTTS Pro'
-                fields['sale_purchase_url'] = 'https://languagetools.anki.study/hypertts-pro'
             elif 'languagetools' in clients:
                 fields['client_name'] = 'Language Tools'
-                fields['sale_purchase_url'] = 'https://languagetools.anki.study/language-tools-signup'
             elif 'awesometts' in clients:
                 fields['client_name'] = 'AwesomeTTS Plus'
-                fields['sale_purchase_url'] = 'https://languagetools.anki.study/awesometts-plus'
-            
+            fields['sale_purchase_url'] = 'https://www.vocab.ai/signup'
+
             # update languages
             languages = row['audio_languages']
             if len(languages) > 0:
