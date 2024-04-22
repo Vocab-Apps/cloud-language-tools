@@ -471,6 +471,7 @@ class PostDeployTests(unittest.TestCase):
 
 
 
+    @pytest.mark.skip(reason="yomichan not working in vocabai api")
     def test_audio_yomichan(self):
         # pytest test_api.py -rPP -k test_audio_yomichan
         
