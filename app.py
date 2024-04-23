@@ -516,6 +516,10 @@ class Health(flask_restful.Resource):
         redis_connection.verify_connection()
         return {'status': 'OK'}, 200
 
+class Version(flask_restful.Resource):
+    def get(self):
+        return {'version': version.CLOUD_LANGUAGE_TOOLS_VERSION}
+
 api.add_resource(LanguageList, '/language_list')
 api.add_resource(VoiceList, '/voice_list')
 api.add_resource(TranslationLanguageList, '/translation_language_list')
@@ -547,6 +551,7 @@ api.add_resource(GetCheddar, '/getcheddar')
 
 # other
 api.add_resource(Health, '/_health')
+api.add_resource(Version, '/_version')
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
