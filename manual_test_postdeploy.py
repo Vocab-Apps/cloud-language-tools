@@ -93,6 +93,15 @@ class PostDeployTests(unittest.TestCase):
             url_endpoint = 'language_data_v1'
         return self.get_request_authenticated(url_endpoint)
 
+    def test_expected_version(self):
+        # pytest manual_test_postdeploy.py -rPP -s -k test_expected_version
+        EXPECTED_VERSION=os.environ['CLOUDLANGUAGETOOLS_EXPECTED_VERSION']
+        
+        response = requests.get(self.get_url('version'))
+        response.raise_for_status()
+        data = response.json()
+        self.assertEqual(data['version'], EXPECTED_VERSION)
+
     def test_verify_api_key(self):
         # pytest manual_test_postdeploy.py -rPP -s -k test_verify_api_key
 
