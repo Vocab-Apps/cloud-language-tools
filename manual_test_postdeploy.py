@@ -97,7 +97,7 @@ class PostDeployTests(unittest.TestCase):
         # pytest manual_test_postdeploy.py -rPP -s -k test_expected_version
         EXPECTED_VERSION=os.environ['CLOUDLANGUAGETOOLS_EXPECTED_VERSION']
         
-        response = requests.get(self.get_url('version'))
+        response = requests.get(self.get_url('_version'))
         response.raise_for_status()
         data = response.json()
         self.assertEqual(data['version'], EXPECTED_VERSION)
