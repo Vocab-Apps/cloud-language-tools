@@ -37,6 +37,7 @@ class RedisDb():
     def connect(self, db_num=0):
         redis_url = secrets.config['redis_url']
         logging.info(f'connecting to redis url: {redis_url}, db_num: {db_num}')
+        print(f'connecting to redis url: {redis_url}, db_num: {db_num}')
 
         self.r = redis.from_url(redis_url, db=db_num, decode_responses=True)
 
