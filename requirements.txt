@@ -2,7 +2,7 @@ cloudlanguagetools>=11.0.3
 flask
 flask_restful
 gunicorn
-redis==5.0.2
+redis
 schedule
 pandas
 sentry-sdk[flask]>=1.10.1

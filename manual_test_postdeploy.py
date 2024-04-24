@@ -40,7 +40,7 @@ def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=Fals
         response = requests.post(url, json=data, headers=headers)
     else:
         url = f'{base_url}/{url_endpoint}'
-        # print(f'using API key: [{api_key}], url: {url}')
+        print(f'using API key: [{api_key}], url: {url}')
         headers = headers={
             'Content-Type': 'application/json', 
             'api_key': api_key,

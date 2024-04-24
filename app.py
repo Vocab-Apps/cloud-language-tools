@@ -69,6 +69,7 @@ getcheddar_utils = getcheddar_utils_module.GetCheddarUtils()
 def authenticate(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        pprint.pprint(request.headers)
         api_key = request.headers.get('api_key', None)
         sentry_sdk.set_user({'id': api_key})
         # is this API key valid ?
