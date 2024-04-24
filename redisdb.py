@@ -37,7 +37,6 @@ class RedisDb():
     def connect(self, db_num=0):
         redis_url = secrets.config['redis_url']
         logging.info(f'connecting to redis url: {redis_url}, db_num: {db_num}')
-        print(f'connecting to redis url: {redis_url}, db_num: {db_num}')
 
         self.r = redis.from_url(redis_url, db=db_num, decode_responses=True)
 
@@ -387,7 +386,6 @@ class RedisDb():
     def api_key_valid(self, api_key):
         redis_key = self.build_key(KEY_TYPE_API_KEY, api_key)
         if self.r.exists(redis_key) == 0:
-            print(f'API Key not found: [{api_key}] redis_key: {redis_key}')
             return {'key_valid': False, 'msg': 'API Key not valid'}
         key_data = self.r.hgetall(redis_key)
 
