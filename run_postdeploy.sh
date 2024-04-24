@@ -9,4 +9,4 @@ docker run \
 --env ANKI_LANGUAGE_TOOLS_API_KEY=${ANKI_LANGUAGE_TOOLS_API_KEY} \
 --env ANKI_LANGUAGE_TOOLS_API_VOCAB=${ANKI_LANGUAGE_TOOLS_API_VOCAB} \
 --env CLOUDLANGUAGETOOLS_EXPECTED_VERSION=${CLOUDLANGUAGETOOLS_EXPECTED_VERSION} \
---rm -it ${DOCKER_IMAGE} # optionally, we can provide arguments like -k test_expected_version
+--rm -it ${DOCKER_IMAGE} $@
