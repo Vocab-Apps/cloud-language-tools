@@ -83,6 +83,10 @@ class PostDeployTests(unittest.TestCase):
 
     def get_url(self, path):
         if self.use_vocab_api:
+            overrides = {
+                '_version': 'version'
+            }
+            path = overrides.get(path, path)
             return f'{self.base_url}/languagetools-api/v2/{path}'
         else:
             return f'{self.base_url}/{path}'
