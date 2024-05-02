@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 CLIENT_VERSION='v0.01'
 CLIENT_NAME='performance_test'
 
+# how to run locust:
+# locust --web-port 8000 --processes 4 --host $ANKI_LANGUAGE_TOOLS_BASE_URL
+
 class CltPerformanceTest(HttpUser):
     def __init__(self, config):
         # call base constructor
