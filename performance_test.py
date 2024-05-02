@@ -2,6 +2,8 @@ import os
 import requests
 import logging
 import time
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -102,12 +104,48 @@ class CltBenchmark:
 
         return execution_time
 
+def run_benchmark_suite(benchmark, num_workers, num_runs):
+    logger.info(f'running benchmark suite with {num_workers} workers and {num_runs} runs')
+
+    # Create a ThreadPoolExecutor
+    execution_times = []
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+        # Start time
+        start_time = time.time()
+
+        # Run benchmark.run_request() 100 times
+        futures = [executor.submit(benchmark.run_request) for _ in range(num_runs)]
+
+        # Wait for all futures to complete
+        for future in concurrent.futures.as_completed(futures):
+            # If there was an exception, it will be raised when result is called
+            try:
+                result = future.result()
+                execution_times.append(result)
+            except Exception as exc:
+                print(f'Generated an exception: {exc}')
+
+        # End time
+        end_time = time.time()
+
+        # Compute the average execution time
+        average_execution_time = (end_time - start_time) / 100
+
+        # compute stats on the times in the execution_times array, including std dev
+        min_time = min(execution_times)
+        max_time = max(execution_times)
+        average_time = sum(execution_times) / len(execution_times)
+        std_dev = (sum([(x - average_time) ** 2 for x in execution_times]) / len(execution_times)) ** 0.5
+
+        logger.info(f'average_time: {average_time}, min_time: {min_time}, max_time: {max_time}, std_dev: {std_dev}')
+
 def run_test():
     # setup default basic logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     benchmark = CltBenchmark()
-    execution_time = benchmark.run_request()
-    logger.info(f'execution_time: {execution_time} seconds')
+    # execution_time = benchmark.run_request()
+    # logger.info(f'execution_time: {execution_time} seconds')
+    run_benchmark_suite(benchmark, 10, 10)
 
 
 

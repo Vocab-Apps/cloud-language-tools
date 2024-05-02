@@ -2,3 +2,4 @@ pydub
 pytest
 python-magic
 bump2version
+locust
