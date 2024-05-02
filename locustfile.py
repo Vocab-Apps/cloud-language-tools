@@ -87,12 +87,15 @@ class CltPerformanceTest(HttpUser):
         # get a random word
         word = self.random_words_instance.get_random_word()
 
-        logger.info(f'word: {word} voice: {selected_voice}')
+        # logger.info(f'word: {word} voice: {selected_voice}')
 
         self.post_request_authenticated_audio('audio', {
             'text': word,
             'service': self.service,
             'voice_key': selected_voice['voice_key'],
-            'options': {}
+            'options': {},
+            'deck_name': 'english_deck',
+            'request_mode': 'batch',
+            'language_code': 'en'            
         })
 
