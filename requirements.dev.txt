@@ -3,3 +3,4 @@ pytest
 python-magic
 bump2version
 locust
+random-word

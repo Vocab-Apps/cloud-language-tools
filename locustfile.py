@@ -1,5 +1,7 @@
 import os
 import logging
+import random
+import random_word
 
 from locust import HttpUser, task
 
@@ -21,8 +23,9 @@ class CltPerformanceTest(HttpUser):
         voice_list = self.get_authenticated(self.base_url, 'voice_list', self.api_key, use_vocab_api=self.use_vocab_api)
 
         self.service = 'Azure'
-        french_voices = [x for x in voice_list if x['language_code'] == 'fr' and x['service'] == self.service]
-        self.selected_voice = french_voices[0]    
+        self.english_voices = [x for x in voice_list if x['language_code'] == 'en' and x['service'] == self.service]
+
+        self.random_words_instance = random_word.RandomWords()
 
     def get_authenticated(self, base_url, url_endpoint, api_key, use_vocab_api=False):
         if use_vocab_api:
@@ -79,10 +82,17 @@ class CltPerformanceTest(HttpUser):
 
     @task
     def run_request(self):
+        # select random voice
+        selected_voice = random.choice(self.english_voices)
+        # get a random word
+        word = self.random_words_instance.get_random_word()
+
+        logger.info(f'word: {word} voice: {selected_voice}')
+
         self.post_request_authenticated_audio('audio', {
-            'text': 'Je ne suis pas intéressé.',
+            'text': word,
             'service': self.service,
-            'voice_key': self.selected_voice['voice_key'],
+            'voice_key': selected_voice['voice_key'],
             'options': {}
         })
 
