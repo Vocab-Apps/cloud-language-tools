@@ -1,0 +1,13 @@
+session_name: clt-server
+start_directory: ./ # load session relative to config location (project root).
+shell_command_before:
+  - cmd: source ${HOME}/python-env/cloud-language-tools/bin/activate
+    sleep_before: 1
+    sleep_after: 1
+  - cmd: source .bash_aliases
+  - cmd: source ~/secrets/cloudlanguagetools/cloudlanguagetools_core_secret.sh
+  - cmd: export ENV=local
+windows:
+- window_name: clt-server
+  focus: true
+- window_name: git
