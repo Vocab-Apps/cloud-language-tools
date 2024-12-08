@@ -277,7 +277,7 @@ class PostDeployTests(unittest.TestCase):
 
         return transliteration_language_list
 
-
+    @unittest.skip("2024/12: skip as azure removed the pinyin transliteration")
     def test_transliteration(self):
         transliteration_language_list = self.get_transliteration_options()
 
