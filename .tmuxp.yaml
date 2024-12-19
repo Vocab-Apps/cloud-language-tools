@@ -5,7 +5,7 @@ shell_command_before:
     sleep_before: 1
     sleep_after: 1
   - cmd: source .bash_aliases
-  - cmd: source ~/secrets/cloudlanguagetools/cloudlanguagetools_core_secret.sh
+  - cmd: source ${SECRETS_DIR}/cloudlanguagetools/cloudlanguagetools_core_secret.sh
   - cmd: export ENV=local
 windows:
 - window_name: clt-server
