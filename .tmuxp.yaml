@@ -11,3 +11,4 @@ windows:
 - window_name: clt-server
   focus: true
 - window_name: git
+- window_name: tests
