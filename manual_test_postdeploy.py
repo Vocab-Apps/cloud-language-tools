@@ -41,12 +41,13 @@ def post_authenticated(base_url, url_endpoint, api_key, data, use_vocab_api=Fals
     else:
         url = f'{base_url}/{url_endpoint}'
         print(f'using API key: [{api_key}], url: {url}')
-        headers = headers={
+        headers = {
             'Content-Type': 'application/json', 
             'api_key': api_key,
             'client': CLIENT_NAME, 
             'client_version': CLIENT_VERSION
         }
+        # pprint.pprint(headers)
         response = requests.post(url, json=data, headers=headers)
     if response.status_code != 200:
         logger.error(f'Error in post_authenticated, url: {url}, status_code: {response.status_code}, response: {response.text}, data: {data}')

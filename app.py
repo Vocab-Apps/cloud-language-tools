@@ -25,6 +25,7 @@ import hmac
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
+from posthog import Posthog
 
 #logging.basicConfig()
 logging.basicConfig(format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s', 
@@ -54,7 +55,12 @@ if secrets.config['sentry']['enable']:
         traces_sampler=traces_sampler,
     )
 
-
+posthog_config = secrets.config.get('posthog', {})
+if posthog_config.get('enable', False):
+    posthog_host = posthog_config['host']
+    posthog_api_key = posthog_config['api_key']
+    posthog = Posthog(project_api_key=posthog_api_key, host=posthog_host)
+    print('enabled posthog reporting')
 
 app = Flask(__name__)
 api = flask_restful.Api(app)
@@ -113,6 +119,24 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 redis_connection.track_usage(api_key, service, request_type, characters, language_code)
             except cloudlanguagetools.errors.OverQuotaError as err:
                 return {'error': str(err)}, 429
+
+            # posthog reporting
+            try:
+                account_data = redis_connection.get_account_data(api_key)
+                user_email = account_data['email']
+
+                client = request.headers.get('client')
+                version = request.headers.get('client_version')
+                posthog.capture(user_email, 'clt_usage_v1', {
+                    'clt_request_type': request_type.name,
+                    'clt_client': client,
+                    'clt_client_version': version,
+                    'clt_service': service_str,
+                    'clt_language': language_code_str
+                })
+            except Exception as posthog_exception:
+                sentry_sdk.capture_exception(posthog_exception)
+
     return func(*args, **kwargs)
 
 def track_usage_translation(func):
