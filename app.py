@@ -128,6 +128,7 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 client = request.headers.get('client')
                 version = request.headers.get('client_version')
                 posthog.capture(user_email, 'clt_usage_v1', {
+                    'clt_platform': 'cloudlanguagetools',
                     'clt_request_type': request_type.name,
                     'clt_client': client,
                     'clt_client_version': version,
