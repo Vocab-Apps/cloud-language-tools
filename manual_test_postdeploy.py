@@ -449,6 +449,10 @@ class PostDeployTests(unittest.TestCase):
         source_text_english = 'success'
 
         english_voices = [x for x in self.voice_list if x['language_code'] == 'en' and x['service'] == service]
+
+        if service == 'Google':
+            # exclude Journey voices
+            english_voices = [x for x in english_voices if 'Journey' not in x['voice_name']]
         # pick random voice
             # pick random voice
         selected_voice = random.choice(english_voices)
