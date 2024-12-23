@@ -133,7 +133,8 @@ def track_usage(request_type, request, func, *args, **kwargs):
                     'clt_client': client,
                     'clt_client_version': version,
                     'clt_service': service_str,
-                    'clt_language': language_code_str
+                    'clt_language': language_code_str,
+                    'clt_text': text
                 })
             except Exception as posthog_exception:
                 sentry_sdk.capture_exception(posthog_exception)
