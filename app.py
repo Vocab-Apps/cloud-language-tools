@@ -422,6 +422,11 @@ class RequestInstantTrialKey(flask_restful.Resource):
         convertkit_client.tag_user_instant_trial(email, api_key, quotas.TRIAL_USER_CHARACTER_LIMIT)
 
         logging.info(f'instant trial key created for {email}')
+
+        posthog.capture(email, 'trial_v1:register', {
+            'clt_platform': 'cloudlanguagetools',
+            'clt_trial_mode': 'instant'
+        })
         
         return {'api_key': api_key}, 200
 
@@ -467,6 +472,11 @@ class ConvertKitRequestTrialKey(flask_restful.Resource):
         api_key = redis_connection.get_trial_user_key(email_address)
 
         convertkit_client.tag_user_api_ready(email_address, api_key, quotas.TRIAL_USER_CHARACTER_LIMIT)
+
+        posthog.capture(email_address, 'trial_v1:register', {
+            'clt_platform': 'cloudlanguagetools',
+            'clt_trial_mode': 'email_subscribe'
+        })
 
         logging.info(f'trial key created for {email_address}')
 
