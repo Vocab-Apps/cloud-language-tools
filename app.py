@@ -122,8 +122,9 @@ def track_usage(request_type, request, func, *args, **kwargs):
 
             # posthog reporting
             try:
-                account_data = redis_connection.get_account_data(api_key)
-                user_email = account_data['email']
+                api_key_data = redis_connection.get_api_key_data(api_key)
+                user_email = api_key_data['email']
+                account_type = api_key_data['type']
 
                 client = request.headers.get('client')
                 version = request.headers.get('client_version')
@@ -134,7 +135,10 @@ def track_usage(request_type, request, func, *args, **kwargs):
                     'clt_client_version': version,
                     'clt_service': service_str,
                     'clt_language': language_code_str,
-                    'clt_text': text
+                    'clt_text': text,
+                    'clt_account_type': account_type,
+                    '$ip': request.remote_addr,
+                    '$set': {'clt_account_type': account_type},
                 })
             except Exception as posthog_exception:
                 sentry_sdk.capture_exception(posthog_exception)
@@ -425,7 +429,8 @@ class RequestInstantTrialKey(flask_restful.Resource):
 
         posthog.capture(email, 'trial_v1:register', {
             'clt_platform': 'cloudlanguagetools',
-            'clt_trial_mode': 'instant'
+            'clt_trial_mode': 'instant',
+            '$ip': request.remote_addr
         })
         
         return {'api_key': api_key}, 200
