@@ -59,7 +59,7 @@ posthog_config = secrets.config.get('posthog', {})
 if posthog_config.get('enable', False):
     posthog_host = posthog_config['host']
     posthog_api_key = posthog_config['api_key']
-    posthog = Posthog(project_api_key=posthog_api_key, host=posthog_host)
+    posthog = Posthog(project_api_key=posthog_api_key, host=posthog_host, disable_geoip=False)
     print('enabled posthog reporting')
 
 app = Flask(__name__)
