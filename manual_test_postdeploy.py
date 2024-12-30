@@ -453,6 +453,9 @@ class PostDeployTests(unittest.TestCase):
         if service == 'Google':
             # exclude Journey voices
             english_voices = [x for x in english_voices if 'Journey' not in x['voice_name']]
+        # for Amazon voices, exclude voices with voice_key['engine'] == 'standard'
+        if service == 'Amazon':
+            english_voices = [x for x in english_voices if x['voice_key']['engine'] != 'standard']
         # pick random voice
             # pick random voice
         selected_voice = random.choice(english_voices)
