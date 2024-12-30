@@ -125,6 +125,7 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 api_key_data = redis_connection.get_api_key_data(api_key)
                 user_email = api_key_data['email']
                 account_type = api_key_data['type']
+                client_ip = request.headers.get('X-Forwarded-For', None)
 
                 client = request.headers.get('client')
                 version = request.headers.get('client_version')
@@ -137,7 +138,7 @@ def track_usage(request_type, request, func, *args, **kwargs):
                     'clt_language': language_code_str,
                     'clt_text': text,
                     'clt_account_type': account_type,
-                    '$ip': request.remote_addr,
+                    '$ip': client_ip,
                     '$set': {'clt_account_type': account_type},
                 })
             except Exception as posthog_exception:
@@ -427,10 +428,11 @@ class RequestInstantTrialKey(flask_restful.Resource):
 
         logging.info(f'instant trial key created for {email}')
 
+        client_ip = request.headers.get('X-Forwarded-For', None)
         posthog.capture(email, 'trial_v1:register', {
             'clt_platform': 'cloudlanguagetools',
             'clt_trial_mode': 'instant',
-            '$ip': request.remote_addr
+            '$ip': client_ip
         })
         
         return {'api_key': api_key}, 200
