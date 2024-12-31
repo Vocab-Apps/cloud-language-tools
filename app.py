@@ -128,6 +128,12 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 client_ip = request.headers.get('X-Forwarded-For', None)
 
                 client = request.headers.get('client')
+                client_rename_map = {
+                    'awesometts': 'anki-awesometts',
+                    'hypertts': 'anki-hyper-tts',
+                    'languagetools': 'anki-language-tools',
+                }
+                client = client_rename_map.get(client, client)
                 version = request.headers.get('client_version')
                 posthog.capture(user_email, 'clt_usage_v1', {
                     'clt_platform': 'cloudlanguagetools',
