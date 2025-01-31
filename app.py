@@ -489,7 +489,7 @@ class ConvertKitRequestTrialKey(flask_restful.Resource):
         posthog.capture(email_address, 'trial_v1:register', {
             'clt_platform': 'cloudlanguagetools',
             'clt_trial_mode': 'email_subscribe'
-        })
+        }, disable_geoip=True)
 
         logging.info(f'trial key created for {email_address}')
 
