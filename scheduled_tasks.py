@@ -78,15 +78,16 @@ def backup_redis_db():
 @sentry_sdk.crons.monitor(monitor_slug='update_airtable')
 def update_airtable():
     try:
-        logging.info('START TASK updating airtable')
-        healthcheck_url = 'https://healthchecks-v4.ipv6n.net/ping/ac84f934-269c-4a97-977f-e34ae04ea04a'
-        signal_healthcheck_start(healthcheck_url)
-        start_time = time.time()
-        utils = user_utils.UserUtils()
-        utils.update_airtable_all()
-        end_time = time.time()
-        logging.info(f'FINISHED TASK updating airtable, time elapsed: {end_time - start_time}')
-        signal_healthcheck_end(healthcheck_url)
+        logging.info('updating airtable disabled')
+        # logging.info('START TASK updating airtable')
+        # healthcheck_url = 'https://healthchecks-v4.ipv6n.net/ping/ac84f934-269c-4a97-977f-e34ae04ea04a'
+        # signal_healthcheck_start(healthcheck_url)
+        # start_time = time.time()
+        # utils = user_utils.UserUtils()
+        # utils.update_airtable_all()
+        # end_time = time.time()
+        # logging.info(f'FINISHED TASK updating airtable, time elapsed: {end_time - start_time}')
+        # signal_healthcheck_end(healthcheck_url)
     except:
         logging.exception(f'could not update airtable')    
 
@@ -128,8 +129,8 @@ def setup_tasks():
     if secrets.config['scheduled_tasks']['user_data']:
         logging.info('setting up user_data tasks')
         report_getcheddar_usage()
-        update_airtable()
-        schedule.every(30).minutes.do(update_airtable)
+        # update_airtable()
+        # schedule.every(30).minutes.do(update_airtable)
         schedule.every(6).hours.do(report_getcheddar_usage)
     if secrets.config['scheduled_tasks']['language_data']:
         logging.info('setting up language_data')
