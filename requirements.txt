@@ -1,4 +1,4 @@
-cloudlanguagetools>=11.6.2
+cloudlanguagetools>=12.0.1
 flask
 flask_restful
 gunicorn==21.2.0
