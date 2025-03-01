@@ -23,5 +23,5 @@ VERSION_NUMBER=$NEW_VERSION
 
 # docker build
 export DOCKER_BUILDKIT=1
-docker build -t lucwastiaux/cloud-language-tools:${VERSION_NUMBER} -f Dockerfile .
-docker push lucwastiaux/cloud-language-tools:${VERSION_NUMBER}
+docker build -t vocabai/cloud-language-tools:${VERSION_NUMBER} -f Dockerfile .
+docker push vocabai/cloud-language-tools:${VERSION_NUMBER}

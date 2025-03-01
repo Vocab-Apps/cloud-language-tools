@@ -1,17 +1,17 @@
 # building for dev:
-# docker build -t lucwastiaux/cloud-language-tools:dev -f Dockerfile .
-# docker push lucwastiaux/cloud-language-tools:dev
+# docker build -t vocabai/cloud-language-tools:dev -f Dockerfile .
+# docker push vocabai/cloud-language-tools:dev
 # 
 # pushing to digitalocean registry
-# docker tag lucwastiaux/cloud-language-tools:dev-3 registry.digitalocean.com/luc/cloud-language-tools:dev-3
+# docker tag vocabai/cloud-language-tools:dev-3 registry.digitalocean.com/luc/cloud-language-tools:dev-3
 # docker push registry.digitalocean.com/luc/cloud-language-tools:dev-3
 
 # running locally:
-# docker run --env-file /home/luc/python/cloud-language-tools-secrets/cloud-language-tools-local  -p 0.0.0.0:8042:8042/tcp lucwastiaux/cloud-language-tools:20220902-7
+# docker run --env-file /home/luc/python/cloud-language-tools-secrets/cloud-language-tools-local  -p 0.0.0.0:8042:8042/tcp vocabai/cloud-language-tools:20220902-7
 # inspecting space usage
 # docker container exec 224e53da8507 du -hc --max-depth=1 /root
 
-FROM lucwastiaux/cloud-language-tools-core:12.0.1
+FROM vocabai/cloud-language-tools-core:12.0.1
 
 ARG GPG_PASSPHRASE
 

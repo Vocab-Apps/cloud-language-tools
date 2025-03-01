@@ -1,6 +1,0 @@
-# building:
-# docker build -t lucwastiaux/nginx-proxy:stable -f Dockerfile.nginx-proxy .
-# docker push lucwastiaux/nginx-proxy:stable
-
-FROM jwilder/nginx-proxy
-RUN  echo 'underscores_in_headers on;' > /etc/nginx/conf.d/additional_settings.conf

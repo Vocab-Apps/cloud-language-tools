@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-DOCKER_IMAGE=lucwastiaux/cloud-language-tools-postdeploy:latest
+DOCKER_IMAGE=vocabai/cloud-language-tools-postdeploy:latest
 
 docker run \
 --env CLOUDLANGUAGETOOLS_CORE_KEY=${CLOUDLANGUAGETOOLS_CORE_KEY} \
