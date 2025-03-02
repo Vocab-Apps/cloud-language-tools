@@ -246,8 +246,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = json.loads(response.data)
-        self.assertEqual(data['Azure'], 'Przebicie')
-        self.assertIn(data['Google'], ['ostry', 'umierający'])
+        self.assertEqual(data['Azure'], 'Męczące')
+        self.assertIn(data['Google'], ['ostry', 'umierający', 'pękający'])
 
     def test_translate_error(self):
         # pytest test_api.py -k test_translate_error
@@ -281,7 +281,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         error_response = json.loads(response.data)
         self.assertTrue('error' in error_response)
-        self.assertEqual(error_response['error'], '400 POST https://translation.googleapis.com/language/translate/v2?prettyPrint=false: Bad language pair: de|de')
+        self.assertEqual(error_response['error'], "400 POST https://translation.googleapis.com/language/translate/v2?prettyPrint=false: Bad language pair: de|de [{'@type': 'type.googleapis.com/google.rpc.BadRequest', 'fieldViolations': [{'field': 'source', 'description': 'Source language: de'}, {'field': 'target', 'description': 'Target language: de'}]}]")
 
 
 
@@ -969,7 +969,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         response_json = json.loads(response.data)
         self.assertTrue('error' in response_json)
-        self.assertEqual(response_json['error'], """Status code: 400: {'details': 'empty synthesized data : TN result is empty', 'errorCode': 'VS10', 'message': 'text parameter check (text 파라미터를 확인해주세요.)'}""")
+        self.assertEqual(response_json['error'], """could not retrieve audio from Naver""")
 
         # incorrect language code passed in
         # =================================
