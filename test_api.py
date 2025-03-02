@@ -298,7 +298,7 @@ class ApiTests(unittest.TestCase):
         service = 'Azure'
         source_text = '成本很低'
         from_language = 'zh_cn'
-        transliteration_candidates = [x for x in transliteration_language_list if x['language_code'] == from_language and x['service'] == service]
+        transliteration_candidates = [x for x in transliteration_language_list if x['language_code'] == from_language and x['service'] == service and x['transliteration_key']['to_script'] == 'Latn']
         self.assertTrue(len(transliteration_candidates) == 1) # once more services are introduced, change this
         transliteration_option = transliteration_candidates[0]
         service = transliteration_option['service']
@@ -374,8 +374,8 @@ class ApiTests(unittest.TestCase):
         service = 'Azure'
         source_text = '成本很低'
         from_language = 'zh_cn'
-        transliteration_candidates = [x for x in transliteration_language_list if x['language_code'] == from_language and x['service'] == service]
-        self.assertTrue(len(transliteration_candidates) == 1) # once more services are introduced, change this
+        transliteration_candidates = [x for x in transliteration_language_list if x['language_code'] == from_language and x['service'] == service and x['transliteration_key']['to_script'] == 'Latn']
+        self.assertTrue(len(transliteration_candidates) == 1, f'found transliteration candidates: {pprint.pformat(transliteration_candidates)}') # once more services are introduced, change this
         transliteration_option = transliteration_candidates[0]
         service = transliteration_option['service']
         transliteration_key = transliteration_option['transliteration_key']
