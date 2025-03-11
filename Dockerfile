@@ -15,9 +15,6 @@ FROM vocabai/cloud-language-tools-core:14.0.0
 
 ARG GPG_PASSPHRASE
 
-# modules not available on pypi
-RUN pip3 install git+https://github.com/Patreon/patreon-python && pip3 cache purge
-
 # this adds any required modules not covered above
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt && pip3 cache purge

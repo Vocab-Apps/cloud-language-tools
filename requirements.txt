@@ -1,4 +1,4 @@
-cloudlanguagetools>=13.0.1
+cloudlanguagetools>=14.0.0
 flask
 flask_restful
 gunicorn==21.2.0
@@ -6,5 +6,6 @@ redis
 schedule
 pandas
 sentry-sdk[flask]>=1.10.1
+setuptools
 patreon @ git+https://github.com/Patreon/patreon-python
 posthog
