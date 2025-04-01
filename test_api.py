@@ -1234,26 +1234,7 @@ class ApiTests(unittest.TestCase):
     def test_request_instant_trial_key(self):
         email = 'languagetools+development.language_tools.customer-20220402-2@mailc.net'
         response = self.client.post('/request_trial_key', json={'email': email})
-        self.assertEqual(response.status_code, 200)
-        response_data = json.loads(response.data)
-        api_key = response_data['api_key']
-
-        response = self.client.post('/verify_api_key', json={'api_key': api_key})
-        data = json.loads(response.data)
-        self.assertEqual({'key_valid': True, 'msg': 'API Key is valid'}, data)
-
-        # try to request for the same email again
-        response = self.client.post('/request_trial_key', json={'email': email})
-        self.assertEqual(response.status_code, 401)
-        response_data = json.loads(response.data)        
-        self.assertEqual(response_data['error'], f'trial API key for {email} already requested')
-
-        # empty email
-        email = ''
-        response = self.client.post('/request_trial_key', json={'email': email})
-        self.assertEqual(response.status_code, 401)
-        response_data = json.loads(response.data)        
-        self.assertEqual(response_data['error'], f'must supply email address')
+        self.assertEqual(response.status_code, 400) # trial disabled
 
     def test_health_check(self):
         response = self.client.get('/_health')

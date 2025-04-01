@@ -413,85 +413,15 @@ class PatreonKeyRequest(flask_restful.Resource):
 
 class RequestInstantTrialKey(flask_restful.Resource):
     def post(self):
-        data = request.json
-        email = data['email']
-        email = redis_connection.normalize_trial_email(email)
-
-        if len(email) == 0:
-            return {'error': 'must supply email address'}, 401
-
-        email_valid, reason = convertkit_client.check_email_valid(email)
-        if not email_valid:
-            return {'error': reason}, 401
-
-        if redis_connection.trial_user_key_exists(email):
-            return {'error': f'trial API key for {email} already requested'}, 401
-
-        # create api key for this subscriber
-        api_key = redis_connection.get_trial_user_key(email)
-
-        convertkit_client.tag_user_instant_trial(email, api_key, quotas.TRIAL_USER_CHARACTER_LIMIT)
-
-        logging.info(f'instant trial key created for {email}')
-
-        client_ip = request.headers.get('X-Forwarded-For', None)
-        posthog.capture(email, 'trial_v1:register', {
-            'clt_platform': 'cloudlanguagetools',
-            'clt_trial_mode': 'instant',
-            '$ip': client_ip
-        })
-        
-        return {'api_key': api_key}, 200
-
-
+        return {'error': 'Please upgrade to the latest AwesomeTTS >= 1.89 to sign up for the trial'}, 400
 
 class ConvertKitTrialQuotaIncrease(flask_restful.Resource):
     def post(self):
-        data = request.json
-        # pprint.pprint(data)
-        subscriber_id = data['subscriber']['id']
-        email_address = data['subscriber']['email_address']
-        trial_api_key = data['subscriber']['fields']['trial_api_key']
-        quota_increase = int(data['subscriber']['fields']['trial_quota_increase'])
-        
-        reset_trial_usage = False
-        if 'trial_instructions' in data['subscriber']['fields']:
-            if data['subscriber']['fields']['trial_instructions'] == 'reset_trial_usage':
-                reset_trial_usage = True
-
-        logging.info(f'increasing trial quota for {email_address} {trial_api_key} to {quota_increase}, reset_trial_usage: {reset_trial_usage}')
-        redis_connection.increase_trial_key_limit(email_address, quota_increase)
-        convertkit_client.tag_user_trial_quota_increased(email_address, quota_increase)
-        if reset_trial_usage:
-            redis_connection.reset_trial_usage(trial_api_key)
-
-
+        return {'error': 'Not supported'}, 400
 
 class ConvertKitRequestTrialKey(flask_restful.Resource):
     def post(self):
-        data = request.json
-        subscriber_id = data['subscriber']['id']
-        email_address = data['subscriber']['email_address']
-
-        email_address = redis_connection.normalize_trial_email(email_address)
-
-        email_valid, reason = convertkit_client.check_email_valid(email_address)
-        if not email_valid:
-            logging.warn(f'trial email address invalid: {email_address}, reason: {reason}')
-            convertkit_client.tag_user_disposable_email(email_address)
-            return
-
-        # create api key for this subscriber
-        api_key = redis_connection.get_trial_user_key(email_address)
-
-        convertkit_client.tag_user_api_ready(email_address, api_key, quotas.TRIAL_USER_CHARACTER_LIMIT)
-
-        posthog.capture(email_address, 'trial_v1:register', {
-            'clt_platform': 'cloudlanguagetools',
-            'clt_trial_mode': 'email_subscribe'
-        }, disable_geoip=True)
-
-        logging.info(f'trial key created for {email_address}')
+        return {'error': 'Not supported'}, 400
 
 class ConvertKitRequestPatreonKey(flask_restful.Resource):
     def post(self):
