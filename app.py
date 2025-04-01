@@ -135,18 +135,20 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 }
                 client = client_rename_map.get(client, client)
                 version = request.headers.get('client_version')
-                posthog.capture(user_email, 'clt_usage_v1', {
-                    'clt_platform': 'cloudlanguagetools',
-                    'clt_request_type': request_type.name,
-                    'clt_client': client,
-                    'clt_client_version': version,
-                    'clt_service': service_str,
-                    'clt_language': language_code_str,
-                    'clt_text': text,
-                    'clt_account_type': account_type,
-                    '$ip': client_ip,
-                    '$set': {'clt_account_type': account_type},
-                })
+
+                # disable tracking, so that we can save costs on posthog
+                # posthog.capture(user_email, 'clt_usage_v1', {
+                #     'clt_platform': 'cloudlanguagetools',
+                #     'clt_request_type': request_type.name,
+                #     'clt_client': client,
+                #     'clt_client_version': version,
+                #     'clt_service': service_str,
+                #     'clt_language': language_code_str,
+                #     'clt_text': text,
+                #     'clt_account_type': account_type,
+                #     '$ip': client_ip,
+                #     '$set': {'clt_account_type': account_type},
+                # })
             except Exception as posthog_exception:
                 sentry_sdk.capture_exception(posthog_exception)
 
