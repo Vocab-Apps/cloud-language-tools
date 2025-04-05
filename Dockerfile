@@ -11,7 +11,7 @@
 # inspecting space usage
 # docker container exec 224e53da8507 du -hc --max-depth=1 /root
 
-FROM vocabai/cloud-language-tools-core:14.0.0
+FROM vocabai/cloud-language-tools-core:14.1.0
 
 ARG GPG_PASSPHRASE
 

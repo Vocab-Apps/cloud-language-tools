@@ -1,6 +1,6 @@
 # docker image for CLT post deploy tests
 
-FROM vocabai/cloud-language-tools-core:14.0.0
+FROM vocabai/cloud-language-tools-core:14.1.0
 
 ARG GPG_PASSPHRASE
 
