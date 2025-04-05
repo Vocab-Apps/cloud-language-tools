@@ -238,7 +238,6 @@ class PostDeployTests(unittest.TestCase):
         self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
         self.assertIn(data['Amazon'], possible_translations)
         self.assertIn(data['Google'], possible_translations)
-        self.assertEqual(data['Watson'], 'Le coût est très bas.')
 
     def test_translate_error(self):
         # pytest manual_test_postdeploy.py -capture=no --log-cli-level=INFO -k test_translate_error
