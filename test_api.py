@@ -1204,6 +1204,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(breakdown_result['breakdown'], expected_output)
 
 
+    @unittest.skip('ignoring this test, watson translation service has been decommissioned')
     def test_breakdown_v1_errors(self):
         # pytest test_api.py -rPP -k test_breakdown_v1_errors
 
