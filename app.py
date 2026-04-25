@@ -137,18 +137,22 @@ def track_usage(request_type, request, func, *args, **kwargs):
                 version = request.headers.get('client_version')
 
                 if posthog_config.get('enable', False) and redis_connection.should_send_posthog_event(api_key):
-                    posthog.capture(user_email, 'legacy_clt_usage_v1', {
-                        'clt_platform': 'cloudlanguagetools',
-                        'clt_request_type': request_type.name,
-                        'clt_client': client,
-                        'clt_client_version': version,
-                        'clt_service': service_str,
-                        'clt_language': language_code_str,
-                        'clt_text': text,
-                        'clt_account_type': account_type,
-                        '$ip': client_ip,
-                        '$set': {'clt_account_type': account_type},
-                    })
+                    posthog.capture(
+                        event='legacy_clt_usage_v1',
+                        distinct_id=user_email,
+                        properties={
+                            'clt_platform': 'cloudlanguagetools',
+                            'clt_request_type': request_type.name,
+                            'clt_client': client,
+                            'clt_client_version': version,
+                            'clt_service': service_str,
+                            'clt_language': language_code_str,
+                            'clt_text': text,
+                            'clt_account_type': account_type,
+                            '$ip': client_ip,
+                            '$set': {'clt_account_type': account_type},
+                        },
+                    )
             except Exception as posthog_exception:
                 sentry_sdk.capture_exception(posthog_exception)
 
