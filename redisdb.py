@@ -22,6 +22,7 @@ KEY_TYPE_USER_REQUEST_MODE ='user_request_mode'
 KEY_TYPE_USER_SERVICE ='user_service'
 KEY_TYPE_USER_AUDIO_LANGUAGE ='user_audio_language'
 KEY_TYPE_AUDIO_LOG ='audio_log'
+KEY_TYPE_POSTHOG_DAILY = 'posthog_daily'
 
 KEY_PREFIX = 'clt'
 
@@ -476,6 +477,14 @@ class RedisDb():
         redis_key = self.build_monthly_user_key(KEY_TYPE_USER_CLIENT_VERSION, api_key)
         self.r.hincrby(redis_key, client_version, 1)
         self.r.expire(redis_key, self.get_expire_time_usage())
+
+    def should_send_posthog_event(self, api_key, daily_limit=2):
+        date_str = datetime.datetime.now().strftime('%Y%m%d')
+        redis_key = self.build_key(KEY_TYPE_POSTHOG_DAILY, f'{date_str}:{api_key}')
+        count = self.r.incr(redis_key)
+        if count == 1:
+            self.r.expire(redis_key, 25 * 3600)
+        return count <= daily_limit
 
     def track_request_mode(self, api_key, request_mode):
         # keep track of the client used
