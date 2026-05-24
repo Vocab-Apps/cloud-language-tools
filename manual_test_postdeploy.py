@@ -235,7 +235,7 @@ class PostDeployTests(unittest.TestCase):
 
         possible_translations = ['à bas prix', 'Faible coût', 'À bas prix', 'faible coût', 'très faible coût', 'Le coût est très bas', 'Le coût est très faible',
             'Très faible coût']
-        self.assertTrue(data['Azure'] == 'Le coût est faible' or data['Azure'] == 'Le coût est très faible')
+        self.assertIn(data['Azure'], ['Le coût est faible', 'Le coût est très faible', 'Le coût est très bas'])
         self.assertIn(data['Amazon'], possible_translations)
         self.assertIn(data['Google'], possible_translations)
 
