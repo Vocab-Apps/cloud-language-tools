@@ -72,6 +72,9 @@ redis_connection = redisdb.RedisDb()
 convertkit_client = convertkit.ConvertKit()
 getcheddar_utils = getcheddar_utils_module.GetCheddarUtils()
 
+MIGRATION_NOTICE = ('Cloud Language Tools has been retired. Please migrate to the Vocab platform: '
+                    'https://www.vocab.ai/signup - questions: help@mail.vocab.ai')
+
 def authenticate(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -155,6 +158,9 @@ def track_usage(request_type, request, func, *args, **kwargs):
                     )
             except Exception as posthog_exception:
                 sentry_sdk.capture_exception(posthog_exception)
+
+            # decommission service
+            return {'error': MIGRATION_NOTICE}, 401
 
     return func(*args, **kwargs)
 
@@ -380,16 +386,13 @@ class YomichanAudio(flask_restful.Resource):
 
 class VerifyApiKey(flask_restful.Resource):
     def post(self):
-        data = request.json
-        api_key = data['api_key']
-        result = redis_connection.api_key_valid(api_key)
-        return result
+        # decommission service
+        return {'key_valid': False, 'msg': MIGRATION_NOTICE}
 
 class Account(flask_restful.Resource):
     def get(self):
-        api_key = request.headers.get('api_key')
-        account_data = redis_connection.get_account_data(api_key)
-        return account_data
+        # decommission service, return the same shape as the "API Key not found" case
+        return {'error': MIGRATION_NOTICE}
 
 class PatreonKey(flask_restful.Resource):
     def get(self):
